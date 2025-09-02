@@ -1,0 +1,43 @@
+{
+    "logs": [
+        {
+            "outputFile": "org.qtproject.example.Remote_Control_Bluetooth-mergeDebugResources-4:/values-el/values-el.xml",
+            "map": [
+                {
+                    "source": "C:\\Qt\\6.7.3\\android_arm64_v8a\\src\\android\\java\\res\\values-el\\strings.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,172",
+                        "endColumns": "116,100",
+                        "endOffsets": "167,268"
+                    },
+                    "to": {
+                        "startLines": "9,11",
+                        "startColumns": "4,4",
+                        "startOffsets": "790,1008",
+                        "endColumns": "116,100",
+                        "endOffsets": "902,1104"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\LuoJihao\\.gradle\\caches\\transforms-3\\1889803c1caf7a44934ab227839ed332\\transformed\\core-1.13.1\\res\\values-el\\values-el.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,153,256,356,459,567,673,790",
+                        "endColumns": "97,102,99,102,107,105,116,100",
+                        "endOffsets": "148,251,351,454,562,668,785,886"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,10",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,153,256,356,459,567,673,907",
+                        "endColumns": "97,102,99,102,107,105,116,100",
+                        "endOffsets": "148,251,351,454,562,668,785,1003"
+                    }
+                }
+            ]
+        }
+    ]
+}

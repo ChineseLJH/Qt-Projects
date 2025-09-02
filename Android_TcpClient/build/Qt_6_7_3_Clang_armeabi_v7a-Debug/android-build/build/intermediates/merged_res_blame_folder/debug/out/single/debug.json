@@ -1,0 +1,6 @@
+[
+    {
+        "merged": "org.qtproject.example.Android_TcpClient-merged_res-6:/xml_qtprovider_paths.xml.flat",
+        "source": "org.qtproject.example.Android_TcpClient-android-build-7:/xml/qtprovider_paths.xml"
+    }
+]

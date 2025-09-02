@@ -1,0 +1,15 @@
+org.qtproject.example.Android_TcpClient-java-0 C:\Qt\6.7.3\android_arm64_v8a\src\android\java\res
+org.qtproject.example.Android_TcpClient-pngs-1 C:\Qt_Project\Android_TcpClient\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\build\generated\res\pngs\debug
+org.qtproject.example.Android_TcpClient-resValues-2 C:\Qt_Project\Android_TcpClient\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\build\generated\res\resValues\debug
+org.qtproject.example.Android_TcpClient-rs-3 C:\Qt_Project\Android_TcpClient\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\build\generated\res\rs\debug
+org.qtproject.example.Android_TcpClient-mergeDebugResources-4 C:\Qt_Project\Android_TcpClient\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\build\intermediates\incremental\debug\mergeDebugResources\merged.dir
+org.qtproject.example.Android_TcpClient-mergeDebugResources-5 C:\Qt_Project\Android_TcpClient\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\build\intermediates\incremental\debug\mergeDebugResources\stripped.dir
+org.qtproject.example.Android_TcpClient-merged_res-6 C:\Qt_Project\Android_TcpClient\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\build\intermediates\merged_res\debug
+org.qtproject.example.Android_TcpClient-android-build-7 C:\Qt_Project\Android_TcpClient\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\res
+org.qtproject.example.Android_TcpClient-debug-8 C:\Qt_Project\Android_TcpClient\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\src\debug\res
+org.qtproject.example.Android_TcpClient-core-1.13.1-9 C:\Users\LuoJihao\.gradle\caches\transforms-3\1889803c1caf7a44934ab227839ed332\transformed\core-1.13.1\res
+org.qtproject.example.Android_TcpClient-core-runtime-2.2.0-10 C:\Users\LuoJihao\.gradle\caches\transforms-3\2b403e01a06595b8444409d73aa3796c\transformed\core-runtime-2.2.0\res
+org.qtproject.example.Android_TcpClient-annotation-experimental-1.4.0-11 C:\Users\LuoJihao\.gradle\caches\transforms-3\73976669f2bc37dc7a9154a5a6579b1d\transformed\annotation-experimental-1.4.0\res
+org.qtproject.example.Android_TcpClient-profileinstaller-1.3.0-12 C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\res
+org.qtproject.example.Android_TcpClient-lifecycle-runtime-2.6.2-13 C:\Users\LuoJihao\.gradle\caches\transforms-3\d0a909cbef776f416f16991abbd941c0\transformed\lifecycle-runtime-2.6.2\res
+org.qtproject.example.Android_TcpClient-startup-runtime-1.1.1-14 C:\Users\LuoJihao\.gradle\caches\transforms-3\df356c7a39e7ed5dfb4999ea8f66705f\transformed\startup-runtime-1.1.1\res

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <!-- DO NOT EDIT THIS: This file is populated automatically by the deployment tool. -->
+
+    <array name="bundled_libs">
+        
+    </array>
+
+    <array name="qt_libs">
+        <item>x86_64;c++_shared</item>
+        <item>x86_64;Qt6Core_x86_64</item>
+        <item>x86_64;Qt6Gui_x86_64</item>
+        <item>x86_64;Qt6Network_x86_64</item>
+        <item>x86_64;Qt6OpenGL_x86_64</item>
+        <item>x86_64;Qt6Qml_x86_64</item>
+        <item>x86_64;Qt6Quick_x86_64</item>
+        <item>x86_64;Qt6Quick3DUtils_x86_64</item>
+        <item>x86_64;Qt6QmlModels_x86_64</item>
+        <item>x86_64;Qt6VirtualKeyboard_x86_64</item>
+        <item>x86_64;Qt6Sql_x86_64</item>
+        <item>x86_64;Qt6InsightTracker_x86_64</item>
+        <item>x86_64;Qt6Svg_x86_64</item>
+        <item>x86_64;Qt6Pdf_x86_64</item>
+        <item>x86_64;Qt6QmlWorkerScript_x86_64</item>
+        <item>x86_64;Qt6QuickTemplates2_x86_64</item>
+        <item>x86_64;Qt6QuickControls2Impl_x86_64</item>
+        <item>x86_64;Qt6QuickControls2_x86_64</item>
+        <item>x86_64;Qt6QuickControls2FusionStyleImpl_x86_64</item>
+        <item>x86_64;Qt6QuickControls2Fusion_x86_64</item>
+        <item>x86_64;Qt6QuickControls2MaterialStyleImpl_x86_64</item>
+        <item>x86_64;Qt6QuickControls2Material_x86_64</item>
+        <item>x86_64;Qt6QuickControls2ImagineStyleImpl_x86_64</item>
+        <item>x86_64;Qt6QuickControls2Imagine_x86_64</item>
+        <item>x86_64;Qt6QuickControls2UniversalStyleImpl_x86_64</item>
+        <item>x86_64;Qt6QuickControls2Universal_x86_64</item>
+        <item>x86_64;Qt6QuickControls2BasicStyleImpl_x86_64</item>
+        <item>x86_64;Qt6QuickControls2Basic_x86_64</item>
+        <item>x86_64;Qt6QuickShapes_x86_64</item>
+    </array>
+
+    <array name="load_local_libs">
+        <item>x86_64;libplugins_platforms_qtforandroid_x86_64.so</item>
+    </array>
+
+    <string name="static_init_classes"></string>
+    <string name="use_local_qt_libs">1</string>
+    <string name="bundle_local_qt_libs">1</string>
+    <string name="system_libs_prefix"></string>
+</resources>

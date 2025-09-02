@@ -1,0 +1,202 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="org.qtproject.example.Remote_Control_Bluetooth"
+4    android:installLocation="auto"
+5    android:versionCode="1"
+6    android:versionName="1.0" >
+7
+8    <uses-sdk
+9        android:minSdkVersion="23"
+9-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml
+10        android:targetSdkVersion="34" />
+10-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml
+11
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:8:5-66
+12-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:8:22-64
+13    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+13-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:9:5-80
+13-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:9:22-78
+14    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+14-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:10:5-78
+14-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:10:22-76
+15    <uses-permission android:name="android.permission.BLUETOOTH" />
+15-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:12:5-67
+15-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:12:22-65
+16    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+16-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:13:5-73
+16-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:13:22-71
+17    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+17-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:14:5-72
+17-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:14:22-70
+18    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+18-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:15:5-77
+18-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:15:22-75
+19    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+19-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:16:5-75
+19-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:16:22-73
+20    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+20-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:18:5-78
+20-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:18:22-76
+21
+22    <uses-feature
+22-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:20:5-86
+23        android:name="android.hardware.bluetooth"
+23-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:20:19-60
+24        android:required="true" />
+24-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:20:61-84
+25    <uses-feature
+25-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:21:5-90
+26        android:name="android.hardware.bluetooth_le"
+26-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:21:19-63
+27        android:required="false" />
+27-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:21:64-88
+28
+29    <supports-screens
+29-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:23:5-27:38
+30        android:anyDensity="true"
+30-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:24:9-34
+31        android:largeScreens="true"
+31-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:25:9-36
+32        android:normalScreens="true"
+32-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:26:9-37
+33        android:smallScreens="true" />
+33-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:27:9-36
+34
+35    <permission
+35-->[androidx.core:core:1.13.1] C:\Users\LuoJihao\.gradle\caches\transforms-3\1889803c1caf7a44934ab227839ed332\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+36        android:name="org.qtproject.example.Remote_Control_Bluetooth.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+36-->[androidx.core:core:1.13.1] C:\Users\LuoJihao\.gradle\caches\transforms-3\1889803c1caf7a44934ab227839ed332\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+37        android:protectionLevel="signature" />
+37-->[androidx.core:core:1.13.1] C:\Users\LuoJihao\.gradle\caches\transforms-3\1889803c1caf7a44934ab227839ed332\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+38
+39    <uses-permission android:name="org.qtproject.example.Remote_Control_Bluetooth.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+39-->[androidx.core:core:1.13.1] C:\Users\LuoJihao\.gradle\caches\transforms-3\1889803c1caf7a44934ab227839ed332\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+39-->[androidx.core:core:1.13.1] C:\Users\LuoJihao\.gradle\caches\transforms-3\1889803c1caf7a44934ab227839ed332\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+40
+41    <application
+41-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:29:5-66:19
+42        android:name="org.qtproject.qt.android.bindings.QtApplication"
+42-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:30:9-71
+43        android:allowBackup="true"
+43-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:34:9-35
+44        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+44-->[androidx.core:core:1.13.1] C:\Users\LuoJihao\.gradle\caches\transforms-3\1889803c1caf7a44934ab227839ed332\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+45        android:debuggable="true"
+46        android:fullBackupOnly="false"
+46-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:35:9-39
+47        android:hardwareAccelerated="true"
+47-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:31:9-43
+48        android:label="Remote_Control_Bluetooth"
+48-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:32:9-49
+49        android:requestLegacyExternalStorage="true" >
+49-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:33:9-52
+50        <activity
+50-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:37:9-55:20
+51            android:name="org.qtproject.qt.android.bindings.QtActivity"
+51-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:38:13-72
+52            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
+52-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:39:13-182
+53            android:exported="true"
+53-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:42:13-36
+54            android:launchMode="singleTop"
+54-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:40:13-43
+55            android:screenOrientation="landscape" >
+55-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:41:13-50
+56            <intent-filter>
+56-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:44:13-47:29
+57                <action android:name="android.intent.action.MAIN" />
+57-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:45:17-68
+57-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:45:25-66
+58
+59                <category android:name="android.intent.category.LAUNCHER" />
+59-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:46:17-76
+59-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:46:27-74
+60            </intent-filter>
+61
+62            <meta-data
+62-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:49:13-51:59
+63                android:name="android.app.lib_name"
+63-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:50:17-52
+64                android:value="Remote_Control_Bluetooth" />
+64-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:51:17-57
+65            <meta-data
+65-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:52:13-54:35
+66                android:name="android.app.arguments"
+66-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:53:17-53
+67                android:value="" />
+67-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:54:17-33
+68        </activity>
+69
+70        <provider
+71            android:name="androidx.core.content.FileProvider"
+71-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:58:13-62
+72            android:authorities="org.qtproject.example.Remote_Control_Bluetooth.qtprovider"
+72-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:59:13-62
+73            android:exported="false"
+73-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:60:13-37
+74            android:grantUriPermissions="true" >
+74-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:61:13-47
+75            <meta-data
+75-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:62:13-64:59
+76                android:name="android.support.FILE_PROVIDER_PATHS"
+76-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:63:17-67
+77                android:resource="@xml/qtprovider_paths" />
+77-->C:\Qt_Project\Remote_Control_Bluetooth\build\Qt_6_7_3_Clang_arm64_v8a-Debug\android-build\AndroidManifest.xml:64:17-57
+78        </provider>
+79        <provider
+79-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:24:9-32:20
+80            android:name="androidx.startup.InitializationProvider"
+80-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:25:13-67
+81            android:authorities="org.qtproject.example.Remote_Control_Bluetooth.androidx-startup"
+81-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:26:13-68
+82            android:exported="false" >
+82-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:27:13-37
+83            <meta-data
+83-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
+84                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
+85                android:value="androidx.startup" />
+85-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
+86        </provider>
+87
+88        <receiver
+88-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
+89            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+89-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
+90            android:directBootAware="false"
+90-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
+91            android:enabled="true"
+91-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
+92            android:exported="true"
+92-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
+93            android:permission="android.permission.DUMP" >
+93-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
+94            <intent-filter>
+94-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
+95                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+95-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
+95-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
+96            </intent-filter>
+97            <intent-filter>
+97-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
+98                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+98-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
+98-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
+99            </intent-filter>
+100            <intent-filter>
+100-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
+101                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+101-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
+101-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
+102            </intent-filter>
+103            <intent-filter>
+103-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
+104                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+104-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
+104-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\LuoJihao\.gradle\caches\transforms-3\a5abd7c9360207573f0b21d185fdfe02\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
+105            </intent-filter>
+106        </receiver>
+107    </application>
+108
+109</manifest>

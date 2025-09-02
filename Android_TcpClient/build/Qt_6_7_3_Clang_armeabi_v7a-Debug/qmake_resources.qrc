@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/Android_TcpClient">
+<file alias="main.qml">C:/Qt_Project/Android_TcpClient/main.qml</file>
+</qresource>
+</RCC>
