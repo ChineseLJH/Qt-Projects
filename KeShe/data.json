@@ -1,0 +1,23 @@
+[
+    {
+        "id": "fig001",
+        "imagePath": ":/images/saber.png",
+        "name": "Saber 胜利与誓约之剑",
+        "price": 899,
+        "quantity": 4
+    },
+    {
+        "id": "fig002",
+        "imagePath": ":/images/rem.png",
+        "name": "蕾姆 - 小恶魔Ver.",
+        "price": 1299,
+        "quantity": 2
+    },
+    {
+        "id": "fig003",
+        "imagePath": ":/images/miku.png",
+        "name": "初音未来 - 交响乐Ver.",
+        "price": 1599,
+        "quantity": 0
+    }
+]
