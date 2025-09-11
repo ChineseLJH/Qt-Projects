@@ -5,6 +5,8 @@
 
 class InventoryManager;
 class QGridLayout;
+class QLineEdit; // [新增] QLineEdit 的前向声明
+
 // 【新增】一个可点击的自定义Widget，用于商品卡片
 class ClickableWidget : public QWidget
 {
@@ -45,7 +47,7 @@ private:
     Ui::MainWindow* ui;
     InventoryManager* m_inventoryManager;
     QGridLayout* m_gridLayout;
+    QLineEdit* m_searchLineEdit; // [新增] 搜索框的成员变量
 };
 
 #endif // MAINWINDOW_H
-

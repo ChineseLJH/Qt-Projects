@@ -1,23 +1,156 @@
 [
     {
         "id": "fig001",
-        "imagePath": ":/images/saber.png",
-        "name": "Saber 胜利与誓约之剑",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig001.png",
+        "name": "Saber 胜利与誓约之剑.",
         "price": 899,
-        "quantity": 4
+        "quantity": 7
     },
     {
         "id": "fig002",
-        "imagePath": ":/images/rem.png",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig002.png",
         "name": "蕾姆 - 小恶魔Ver.",
         "price": 1299,
-        "quantity": 2
+        "quantity": 0
     },
     {
         "id": "fig003",
-        "imagePath": ":/images/miku.png",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig003.png",
         "name": "初音未来 - 交响乐Ver.",
         "price": 1599,
         "quantity": 0
+    },
+    {
+        "id": "fig004",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig004.png",
+        "name": "海贼王 - 尼卡路飞.",
+        "price": 899,
+        "quantity": 10
+    },
+    {
+        "id": "fig005",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig005.png",
+        "name": "海贼王 - 炼狱鬼斩索隆.",
+        "price": 999,
+        "quantity": 16
+    },
+    {
+        "id": "fig006",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig006.png",
+        "name": "海贼王 - 三巨头.",
+        "price": 1699,
+        "quantity": 1
+    },
+    {
+        "id": "fig007",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig007.png",
+        "name": "海贼王 - 火拳艾斯.",
+        "price": 1299,
+        "quantity": 0
+    },
+    {
+        "id": "fig008",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig008.png",
+        "name": "鬼灭之刃 - 水柱.",
+        "price": 599,
+        "quantity": 21
+    },
+    {
+        "id": "fig009",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig009.png",
+        "name": "鬼灭之刃 - 虫柱.",
+        "price": 899,
+        "quantity": 11
+    },
+    {
+        "id": "fig010",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig010.png",
+        "name": "鬼灭之刃 - 炎柱.",
+        "price": 399,
+        "quantity": 27
+    },
+    {
+        "id": "fig011",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig011.png",
+        "name": "间谍过家家 - Q版阿尼亚.",
+        "price": 599,
+        "quantity": 20
+    },
+    {
+        "id": "fig012",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig012.png",
+        "name": "原神 - 申鹤.",
+        "price": 799,
+        "quantity": 17
+    },
+    {
+        "id": "fig013",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig013.png",
+        "name": "原神 - 优菈 罪与罚ver.",
+        "price": 1599,
+        "quantity": 6
+    },
+    {
+        "id": "fig014",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig014.png",
+        "name": "新世纪福音战士 - 绫波丽.",
+        "price": 799,
+        "quantity": 10
+    },
+    {
+        "id": "fig015",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig015.png",
+        "name": "原神 - 凝光.",
+        "price": 1199,
+        "quantity": 9
+    },
+    {
+        "id": "fig016",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig016.png",
+        "name": "原神 - Q版可莉.",
+        "price": 299,
+        "quantity": 22
+    },
+    {
+        "id": "fig017",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig017.png",
+        "name": "原神 - 刻晴.",
+        "price": 499,
+        "quantity": 24
+    },
+    {
+        "id": "fig018",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig018.png",
+        "name": "刀剑神域 - 神谷桐人.",
+        "price": 999,
+        "quantity": 22
+    },
+    {
+        "id": "fig019",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig019.png",
+        "name": "蝙蝠侠 - 罪恶都市.",
+        "price": 1599,
+        "quantity": 12
+    },
+    {
+        "id": "fig020",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig020.png",
+        "name": "钢铁侠 - 经典.",
+        "price": 1299,
+        "quantity": 3
+    },
+    {
+        "id": "fig021",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig021.png",
+        "name": "蜘蛛侠 - 红黑战衣.",
+        "price": 999,
+        "quantity": 20
+    },
+    {
+        "id": "fig022",
+        "imagePath": "C:/Qt-Projects/KeShe/images/fig022.png",
+        "name": "米奇 - 米奇和朋友们半机械.",
+        "price": 1599,
+        "quantity": 1
     }
 ]

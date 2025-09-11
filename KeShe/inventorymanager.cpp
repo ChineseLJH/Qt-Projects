@@ -7,120 +7,129 @@
 #include <QStandardPaths>
 #include <QDir>
 
-// =================================================================
-// 【ADDED】 Implementation for the constructor
-// =================================================================
 InventoryManager::InventoryManager(QObject *parent)
     : QObject(parent)
 {
+    // 在构造时就确定数据文件的路径
     m_writableFilePath = getWritableDataPath();
 }
 
-// =================================================================
-// 【ADDED】 Implementation for initialize
-// Loads inventory or creates a default one if it doesn't exist.
-// =================================================================
 void InventoryManager::initialize()
 {
-    if (!loadInventory()) {
-        qDebug() << "Could not load inventory, creating default set.";
-        // Create some default figures if loading fails
-        m_figures = {
-            {"saber", "Artoria Pendragon", 888.0, 10, ":/images/saber.png"},
-            {"rem", "Rem", 750.0, 8, ":/images/rem.png"},
-            {"miku", "Hatsune Miku", 920.0, 15, ":/images/miku.png"},
-            {"kurumi", "Kurumi Tokisaki", 820.0, 5, ":/images/kurumi.png"}
-        };
-        saveInventory();
+    bool isLoaded = loadInventory();
+    if (!isLoaded)
+    {
+        // 如果加载文件失败，通过信号发送错误消息
+        emit displayMessage("错误：无法加载库存文件 data.json，请检查文件是否存在。", true);
     }
+
+    // 发送信号通知UI刷新显示
     emit inventoryChanged();
 }
 
-// =================================================================
-// 【ADDED】 Implementation for loadInventory
-// Reads the figure data from a JSON file.
-// =================================================================
 bool InventoryManager::loadInventory()
 {
-    QFile file(m_writableFilePath);
-    if (!file.exists() || !file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Cannot open inventory file for reading:" << m_writableFilePath;
+    QFile inventoryFile(m_writableFilePath);
+
+    // 尝试以只读模式打开文件
+    bool canOpenFile = inventoryFile.open(QIODevice::ReadOnly);
+    if (!canOpenFile)
+    {
+        qWarning() << "无法打开库存文件进行读取:" << m_writableFilePath;
         return false;
     }
 
-    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-    file.close();
+    // 读取文件所有内容
+    QByteArray fileData = inventoryFile.readAll();
+    inventoryFile.close();
 
-    if (!doc.isArray()) {
-        qWarning() << "Inventory file is not a valid JSON array.";
+    // 将读取的数据解析为JSON文档
+    QJsonDocument doc = QJsonDocument::fromJson(fileData);
+
+    // 检查JSON的根元素是否为数组
+    if (!doc.isArray())
+    {
+        qWarning() << "库存文件格式错误，根元素不是一个有效的JSON数组。";
         return false;
     }
 
+    // 清空旧数据
     m_figures.clear();
-    QJsonArray array = doc.array();
-    for (const QJsonValue& value : array) {
+
+    QJsonArray jsonArray = doc.array();
+    // 遍历JSON数组，解析每个商品对象
+    for (const QJsonValue& value : jsonArray)
+    {
         QJsonObject obj = value.toObject();
+
         Figure fig;
         fig.id = obj["id"].toString();
         fig.name = obj["name"].toString();
         fig.price = obj["price"].toDouble();
         fig.quantity = obj["quantity"].toInt();
         fig.imagePath = obj["imagePath"].toString();
+
         m_figures.append(fig);
     }
+
     return true;
 }
 
-// =================================================================
-// 【ADDED】 Implementation for saveInventory
-// Writes the current figure data to a JSON file.
-// =================================================================
 bool InventoryManager::saveInventory()
 {
-    qDebug() << "Attempting to SAVE inventory to:" << m_writableFilePath;
+    qDebug() << "尝试保存库存到文件:" << m_writableFilePath;
 
-    QJsonArray array;
-    for (const Figure& fig : m_figures) {
-        QJsonObject obj;
-        obj["id"] = fig.id;
-        obj["name"] = fig.name;
-        obj["price"] = fig.price;
-        obj["quantity"] = fig.quantity;
-        obj["imagePath"] = fig.imagePath;
-        array.append(obj);
+    QJsonArray figureArray;
+
+    // 遍历内存中的商品列表，转换为JSON对象
+    for (const Figure& fig : m_figures)
+    {
+        QJsonObject figureObject;
+        figureObject["id"] = fig.id;
+        figureObject["name"] = fig.name;
+        figureObject["price"] = fig.price;
+        figureObject["quantity"] = fig.quantity;
+        figureObject["imagePath"] = fig.imagePath;
+
+        figureArray.append(figureObject);
     }
 
-    QFile file(m_writableFilePath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        qWarning() << "Cannot open inventory file for writing:" << m_writableFilePath;
+    QJsonDocument doc(figureArray);
+
+    QFile inventoryFile(m_writableFilePath);
+    // 以只写和覆盖模式打开文件
+    bool canOpenFile = inventoryFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    if (!canOpenFile)
+    {
+        qWarning() << "无法打开库存文件进行写入:" << m_writableFilePath;
         return false;
     }
 
-    file.write(QJsonDocument(array).toJson());
-    file.close();
+    // 将JSON数据写入文件
+    inventoryFile.write(doc.toJson());
+    inventoryFile.close();
+
     return true;
 }
 
-// =================================================================
-// 【ADDED】 Implementation for findFigureById (non-const version)
-// Finds a figure by its ID and returns a modifiable pointer.
-// =================================================================
 Figure* InventoryManager::findFigureById(const QString& figureId)
 {
-    for (Figure& fig : m_figures) {
-        if (fig.id == figureId) {
-            return &fig;
+    // 遍历查找具有匹配ID的商品
+    for (int i = 0; i < m_figures.size(); ++i)
+    {
+        if (m_figures[i].id == figureId)
+        {
+            // 返回一个指向该商品的可修改指针
+            return &m_figures[i];
         }
     }
+    // 如果找不到，返回空指针
     return nullptr;
 }
 
-// =================================================================
-// 【ADDED】 Implementation for getWritableDataPath
-// Gets a reliable path to store the data file.
-// =================================================================
 QString InventoryManager::getWritableDataPath()
 {
+    // 为了简单起见，这里使用一个固定的硬编码路径
     return QString("C:/Qt-Projects/KeShe/data.json");
 }
 
@@ -129,33 +138,58 @@ const QList<Figure>& InventoryManager::getFigures() const
     return m_figures;
 }
 
-// Modified purchase function
-bool InventoryManager::purchaseFigure(const QString& figureId, int quantityToPurchase) {
+bool InventoryManager::purchaseFigure(const QString& figureId, int quantityToPurchase)
+{
     Figure* figure = findFigureById(figureId);
-    if (figure) {
-        if (quantityToPurchase <= 0) {
-            emit displayMessage("Error: Purchase quantity must be greater than 0!", true);
-            return false;
-        }
-        if (figure->quantity >= quantityToPurchase) {
-            figure->quantity -= quantityToPurchase;
-            emit displayMessage(QString("Successfully purchased %1 of '%2'!").arg(quantityToPurchase).arg(figure->name));
-            emit inventoryChanged();
-            saveInventory();
-            return true;
-        } else {
-            emit displayMessage(QString("Not enough stock for '%1'!").arg(figure->name), true);
-            return false;
-        }
+
+    // 检查商品是否存在
+    if (figure == nullptr)
+    {
+        emit displayMessage("错误: 指定的商品未找到!", true);
+        return false;
     }
-    emit displayMessage("Error: Specified item not found!", true);
-    return false;
+
+    // 检查购买数量是否合法
+    if (quantityToPurchase <= 0)
+    {
+        emit displayMessage("错误: 购买数量必须大于0!", true);
+        return false;
+    }
+
+    // 检查库存是否充足
+    bool hasEnoughStock = (figure->quantity >= quantityToPurchase);
+    if (hasEnoughStock)
+    {
+        // 扣减库存
+        figure->quantity = figure->quantity - quantityToPurchase;
+
+        // 发送成功消息
+        QString successMsg = QString("成功购买 '%2' x %1!").arg(quantityToPurchase).arg(figure->name);
+        emit displayMessage(successMsg);
+
+        // 通知UI刷新
+        emit inventoryChanged();
+
+        // 保存到文件
+        saveInventory();
+
+        return true;
+    }
+    else
+    {
+        // 库存不足
+        QString errorMsg = QString("'%1' 库存不足!").arg(figure->name);
+        emit displayMessage(errorMsg, true);
+        return false;
+    }
 }
 
 const Figure* InventoryManager::getFigureById(const QString& figureId) const
 {
-    for (const Figure& fig : m_figures) {
-        if (fig.id == figureId) {
+    for (const Figure& fig : m_figures)
+    {
+        if (fig.id == figureId)
+        {
             return &fig;
         }
     }

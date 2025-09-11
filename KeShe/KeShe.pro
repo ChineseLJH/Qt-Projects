@@ -9,13 +9,15 @@ SOURCES += \
     inventorymanager.cpp \
     main.cpp \
     mainwindow.cpp \
-    figuredetaildialog.cpp   # << 新增
+    figuredetaildialog.cpp \   # << 新增
+    paymentscandialog.cpp
 
 HEADERS += \
     figure.h \
     inventorymanager.h \
     mainwindow.h \
-    figuredetaildialog.h     # << 新增
+    figuredetaildialog.h \     # << 新增
+    paymentscandialog.h
 
 FORMS += \
     mainwindow.ui
@@ -25,5 +27,4 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-RESOURCES += \
-    resources.qrc
+RESOURCES +=
