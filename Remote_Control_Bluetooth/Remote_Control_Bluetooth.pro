@@ -13,7 +13,7 @@ RESOURCES += \
     qml.qrc
 
 # 启用 Qt for Android 打包插件
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/Android
 
 # QML 插件搜索路径（如果你使用了自定义模块）
 QML_IMPORT_PATH += $$PWD
@@ -23,6 +23,5 @@ QML_IMPORT_PATH += $$PWD
 
 # Android 权限设置
 DISTFILES += \
-    android/AndroidManifest.xml \
-    android/res/xml/qtprovider_paths.xml
+    Android/AndroidManifest.xml
 

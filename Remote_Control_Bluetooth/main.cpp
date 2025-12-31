@@ -5,7 +5,7 @@
 #ifdef Q_OS_ANDROID
 #include <QJniObject>
 #include <QJniEnvironment>
-#include "BluetoothManager.h"
+#include "bluetoothmanager.h"
 #endif
 
 int main(int argc, char *argv[])

@@ -1,0 +1,6 @@
+[
+    {
+        "merged": "org.qtproject.example.Remote_Control_Bluetooth-merged_res-11:/xml_qtprovider_paths.xml.flat",
+        "source": "org.qtproject.example.Remote_Control_Bluetooth-android-build-12:/xml/qtprovider_paths.xml"
+    }
+]

@@ -264,6 +264,13 @@
            </property>
           </spacer>
          </item>
+         <item row="2" column="3">
+          <widget class="QCheckBox" name="checkBox_ex">
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>

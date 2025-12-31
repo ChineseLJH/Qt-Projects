@@ -17,9 +17,11 @@ myWidget::myWidget(QWidget *parent)
     updateSerialPortList();
 
     // 设置可选参数
-    ui->CboxSerialPort_2->addItems({"9600", "115200"});
+    // ui->CboxSerialPort_2->addItems({"9600", "115200"});
+    ui->CboxSerialPort_2->addItems({"115200"});
     ui->CboxSerialPort_3->addItems({"None", "Even", "Odd"});
-    ui->CboxSerialPort_4->addItems({"5", "6", "7", "8"});
+    // ui->CboxSerialPort_4->addItems({"5", "6", "7", "8"});
+    ui->CboxSerialPort_4->addItems({"8"});
     ui->CboxSerialPort_5->addItems({"1", "1.5", "2"});
 
     ui->pushButton_1->setText("打开");
@@ -30,6 +32,7 @@ myWidget::myWidget(QWidget *parent)
 
     ui->checkBox_1->setText("16进制显示");
     ui->checkBox_2->setText("16进制发送");
+    ui->checkBox_ex->setText("补充回车");
 
     connect(&mSerialPort, &QSerialPort::readyRead, this, &myWidget::readSerialData);
 
@@ -151,6 +154,8 @@ void myWidget::sendData()
         return;
     }
 
+    if (MyEnter) dataToSend +='\n';
+
     QByteArray byteArray = dataToSend.toUtf8();
     mSerialPort.write(byteArray);
     appendMessage("📤 发送数据：" + dataToSend);
@@ -226,4 +231,14 @@ void myWidget::on_pushButton_5_clicked()
     }
 
     isDarkMode = !isDarkMode; // 切换模式状态
+}
+
+void myWidget::on_checkBox_ex_toggled(bool checked)
+{
+    MyEnter = checked;
+    if(MyEnter) {
+        appendMessage("⚠️ 补充回车已打开");
+    } else {
+        appendMessage("⚠️ 补充回车已关闭");
+    }
 }

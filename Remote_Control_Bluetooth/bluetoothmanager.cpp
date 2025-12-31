@@ -1,4 +1,4 @@
-#include "BluetoothManager.h"
+#include "bluetoothmanager.h"
 #include <QDebug>
 #include <QBluetoothLocalDevice>
 #include <QtBluetooth/QtBluetooth>

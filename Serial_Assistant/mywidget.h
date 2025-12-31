@@ -31,14 +31,15 @@ private slots:
     void clearReceivedData();
     void on_checkBox_1_toggled(bool checked);
     void on_checkBox_2_toggled(bool checked);
+    void on_checkBox_ex_toggled(bool checked);
     void on_pushButton_5_clicked();
-
 
 private:
     Ui::myWidget *ui;
     QSerialPort mSerialPort;
     bool displayHex_1 = false;
     bool displayHex_2 = false;
+    bool MyEnter = false;
 };
 
 #endif // MYWIDGET_H

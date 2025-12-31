@@ -107,13 +107,13 @@ ApplicationWindow {
         interval: 10; running: true; repeat: true
         onTriggered: {
             if (isConnected) {
-                // var a = buttonStates["前倾"] ? 1 : 0
-                // var b = buttonStates["后仰"] ? 1 : 0
-                // var c = buttonStates["击球"] ? 1 : 0
-                // var d = buttonStates["备用1"] ? 1 : 0
+                var a = buttonStates["前倾"] ? 1 : 0
+                var b = buttonStates["后仰"] ? 1 : 0
+                var c = buttonStates["击球"] ? 1 : 0
+                var d = buttonStates["备用1"] ? 1 : 0
 
-                // const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${a};${b};${c};${d}]`
-                const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${right_stickAngle.toFixed(1)};${right_stickDistance.toFixed(2)};${0};${0}]`
+                const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${a};${b};${c};${d}]`
+                // const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${right_stickAngle.toFixed(1)};${right_stickDistance.toFixed(2)};${0};${0}]`
                 const crc = calculateCRC(dataPart)
                 const payload = `${dataPart}${crc}\n`
 
@@ -167,13 +167,23 @@ ApplicationWindow {
                 spacing: 12
                 width: parent.width
 
+                // Text {
+                //     text: "角度: " + left_stickAngle.toFixed(1) + "°/" + right_stickAngle.toFixed(1) + "°"
+                //     font.pixelSize: 24
+                // }
+
+                // Text {
+                //     text: "距离: " + left_stickDistance.toFixed(3) + "/" + right_stickDistance.toFixed(3)
+                //     font.pixelSize: 24
+                // }
+
                 Text {
-                    text: "角度: " + left_stickAngle.toFixed(1) + "°/" + right_stickAngle.toFixed(1) + "°"
+                    text: "角度: " + left_stickAngle.toFixed(1) + "°"
                     font.pixelSize: 24
                 }
 
                 Text {
-                    text: "距离: " + left_stickDistance.toFixed(3) + "/" + right_stickDistance.toFixed(3)
+                    text: "距离: " + left_stickDistance.toFixed(3)
                     font.pixelSize: 24
                 }
 
@@ -217,48 +227,48 @@ ApplicationWindow {
             }
         }
 
-        // Item {
-        //     width: parent.width * 0.25
-        //     height: parent.width * 0.25
-        //     anchors.verticalCenter: parent.verticalCenter
-
-        //     Column {
-        //         anchors.centerIn: parent; spacing: 16
-        //         Repeater {
-        //             model: ["前倾", "后仰", "击球", "备用1"]
-        //             Button {
-        //                 text: modelData; checkable: true
-        //                 width: 80; height: 48
-        //                 onPressed:  buttonStates[modelData] = true
-        //                 onReleased: buttonStates[modelData] = false
-        //                 background: Rectangle {
-        //                     color: pressed ? "#4CAF50" : "#E0E0E0"
-        //                     radius: 4
-        //                 }
-        //                 contentItem: Text {
-        //                     text: parent.text
-        //                     color: parent.pressed ? "white" : "black"
-        //                     horizontalAlignment: Text.AlignHCenter
-        //                     verticalAlignment: Text.AlignVCenter
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
         Item {
             width: parent.width * 0.25
-            height: width
+            height: parent.width * 0.25
             anchors.verticalCenter: parent.verticalCenter
-            Joystick {
-                id: rightStick
-                anchors.fill: parent
-                onChanged: {
-                    right_stickAngle = angle
-                    right_stickDistance = distance
+
+            Column {
+                anchors.centerIn: parent; spacing: 16
+                Repeater {
+                    model: ["前倾", "后仰", "击球", "备用1"]
+                    Button {
+                        text: modelData; checkable: true
+                        width: 80; height: 48
+                        onPressed:  buttonStates[modelData] = true
+                        onReleased: buttonStates[modelData] = false
+                        background: Rectangle {
+                            color: pressed ? "#4CAF50" : "#E0E0E0"
+                            radius: 4
+                        }
+                        contentItem: Text {
+                            text: parent.text
+                            color: parent.pressed ? "white" : "black"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
                 }
             }
         }
+
+        // Item {
+        //     width: parent.width * 0.25
+        //     height: width
+        //     anchors.verticalCenter: parent.verticalCenter
+        //     Joystick {
+        //         id: rightStick
+        //         anchors.fill: parent
+        //         onChanged: {
+        //             right_stickAngle = angle
+        //             right_stickDistance = distance
+        //         }
+        //     }
+        // }
 
     }
 }
