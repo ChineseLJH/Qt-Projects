@@ -53,3 +53,16 @@ compile_commands.json
 
 *_qmlcache.qrc
 
+build/
+*.build
+*.exe
+*.dll
+
+# --- Qt Creator 生成的索引缓存 (你的日志里全是这个) ---
+.qtc_clangd/
+*.stash
+
+# --- Android (建议现在就加上) ---
+android-build/
+*.apk
+*.aab
