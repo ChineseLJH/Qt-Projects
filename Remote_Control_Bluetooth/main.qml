@@ -289,7 +289,7 @@ ApplicationWindow {
                         }
 
                         background: Rectangle {
-                            color: pressed ? "#4CAF50" : "#E0E0E0"
+                            color: parent.isActiveData ? "#4CAF50" : "#E0E0E0"
                             radius: 4
 
                             border.width: parent.pressed ? 2 : 0
