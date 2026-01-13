@@ -17,6 +17,8 @@ ApplicationWindow {
     property string logText: ""
     property string targetUuid: "00001101-0000-1000-8000-00805F9B34FB"  // 标准串口UUID
 
+    property bool isBusy: false
+
 
     function appendLog(msg) {
         const time = new Date().toLocaleTimeString()
@@ -91,9 +93,9 @@ ApplicationWindow {
     property real right_stickAngle: 0
     property real right_stickDistance: 0
 
-    property var buttonStates: {
-        "前倾": false, "后仰": false,
-        "击球": false, "备用1": false
+    property var inputStates: {
+        "上升": false, "下降": false,
+        "左旋": false, "右旋": false
     }
 
     property int sum: 0
@@ -104,13 +106,13 @@ ApplicationWindow {
     }
 
     Timer {
-        interval: 10; running: true; repeat: true
+        interval: 20; running: true; repeat: true
         onTriggered: {
             if (isConnected) {
-                var a = buttonStates["前倾"] ? 1 : 0
-                var b = buttonStates["后仰"] ? 1 : 0
-                var c = buttonStates["击球"] ? 1 : 0
-                var d = buttonStates["备用1"] ? 1 : 0
+                var a = buttonStates["上升"] ? 1 : 0
+                var b = buttonStates["下降"] ? 1 : 0
+                var c = buttonStates["左旋"] ? 1 : 0
+                var d = buttonStates["右旋"] ? 1 : 0
 
                 const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${a};${b};${c};${d}]`
                 // const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${right_stickAngle.toFixed(1)};${right_stickDistance.toFixed(2)};${0};${0}]`
@@ -235,7 +237,7 @@ ApplicationWindow {
             Column {
                 anchors.centerIn: parent; spacing: 16
                 Repeater {
-                    model: ["前倾", "后仰", "击球", "备用1"]
+                    model: ["上升", "下降", "左旋", "右旋"]
                     Button {
                         text: modelData; checkable: true
                         width: 80; height: 48
