@@ -116,6 +116,61 @@ void BluetoothManager::sendMessage(const QString &msg) {
     }
 }
 
+void BluetoothManager::sendControlData(double angle, double dist,
+                                       bool btnA, bool btnB, bool btnC, bool btnD)
+{
+    // 1. 检查连接状态 (借用 sendMessage 里的检查逻辑，或者直接在这里判断)
+    if (!m_socket || m_socket->state() != QBluetoothSocket::SocketState::ConnectedState) {
+        return;
+    }
+
+    // 2. 格式化数据体
+    // 对应 JS: `[${angle};${dist};${a};${b};${c};${d}]`
+    // %.1f 保留1位小数, %.2f 保留2位小数, %d 对应整数(0/1)
+    QString dataPart = QString::asprintf("[%.1f;%.2f;%d;%d;%d;%d]",
+                                         angle, dist,
+                                         btnA ? 1 : 0,
+                                         btnB ? 1 : 0,
+                                         btnC ? 1 : 0,
+                                         btnD ? 1 : 0);
+
+    // 3. 计算 CRC (将 QString 转为 QByteArray 进行计算)
+    QString crcHex = calculateCRC16(dataPart.toUtf8());
+
+    // 4. 拼接完整包: 数据 + CRC + 换行符
+    QString fullPayload = dataPart + crcHex + "\n";
+
+    // 5. 发送 (直接调用底层的 write，或者复用 sendMessage)
+    // m_socket->write(fullPayload.toUtf8());
+    sendMessage(fullPayload);
+}
+
+QString BluetoothManager::calculateCRC16(const QByteArray &data)
+{
+    uint16_t crc = 0xFFFF;
+
+    // 遍历每一个字节
+    for (char c : data) {
+        // 注意：C++ char 可能是有符号的，进行位运算前必须强转为 uint8_t
+        crc ^= static_cast<uint8_t>(c);
+
+        for (int j = 0; j < 8; j++) {
+            if (crc & 1) {
+                crc = (crc >> 1) ^ 0xA001;
+            } else {
+                crc >>= 1;
+            }
+        }
+    }
+
+    // 拆分高低位 (对应 JS: hi.toString(16)... + lo.toString(16)...)
+    uint8_t hi = (crc >> 8) & 0xFF;
+    uint8_t lo = crc & 0xFF;
+
+    // 格式化为 4位 十六进制字符串 (例如 "A5B6")
+    // %02X 表示：16进制，大写，不足2位补0
+    return QString::asprintf("%02X%02X", hi, lo);
+}
 
 QString BluetoothManager::targetAddress() const {
     return m_targetAddress;

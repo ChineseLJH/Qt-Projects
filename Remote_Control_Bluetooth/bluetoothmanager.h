@@ -25,6 +25,8 @@ public:
     Q_INVOKABLE void disconnect();                                           // 断开连接
     Q_INVOKABLE void abortconnection();                                      // 强制断开
     Q_INVOKABLE void sendMessage(const QString &msg);                        // 发送消息
+    Q_INVOKABLE void sendControlData(double leftAngle, double leftDist,
+                                     bool btnA, bool btnB, bool btnC, bool btnD);
 
     // Q_INVOKABLE void pairDevice(const QString &address, const QString &password); // 声明接口
     Q_INVOKABLE void registerPairingAgent(); // 声明接口
@@ -52,6 +54,7 @@ private slots:
     void onSocketError(const QBluetoothSocket::SocketError &err);
 
 private:
+    QString calculateCRC16(const QByteArray &data);
     QBluetoothDeviceDiscoveryAgent *m_discoveryAgent = nullptr;
     QBluetoothSocket *m_socket = nullptr;
     QBluetoothLocalDevice *m_localDevice = nullptr; // 新增成员变量

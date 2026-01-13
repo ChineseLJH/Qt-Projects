@@ -1,4 +1,4 @@
-import QtQuick 2.15
+﻿import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.impl
@@ -30,6 +30,14 @@ ApplicationWindow {
     property bool tx_monitor_left: false
     property bool tx_monitor_right: false
 
+    property real left_stickAngle: 0
+    property real left_stickDistance: 0
+    property real right_stickAngle: 0
+    property real right_stickDistance: 0
+
+    property int sum: 0
+    property int num: 0
+
     function appendLog(msg) {
         const time = new Date().toLocaleTimeString()
         appWin.logText += `[${time}] ${msg}\n`
@@ -40,6 +48,42 @@ ApplicationWindow {
         })
     }
 
+    function forceResetState()
+    {
+        // 1.停止看门狗
+        disconnectWatchdog.stop()
+
+        // 2.释放 UI 锁
+        isBusy = false
+        isConnected = false
+        appWin.pairedLogged = flase
+
+        // 3.状态处理
+        tx_monitor_up = false
+        tx_monitor_down = false
+        tx_monitor_left = false
+        tx_monitor_right = false
+
+        // 4.重新搜索
+        bt.startScan()
+    }
+
+    // 看门狗
+    Timer{
+        id: disconnectWatchdog
+        interval: 1500
+        repeat: false
+        onTriggered: {
+            appendLog("断开超时，准备强制断开")
+            bt.abortconnection()
+            forceResetState()
+        }
+    }
+
+    Component.onCompleted: {
+        bt.startScan()
+    }
+
     BluetoothManager {
         id: bt
         targetAddress: appWin.targetAddress
@@ -47,7 +91,7 @@ ApplicationWindow {
         onDeviceDiscovered: (name, addr) => {
             if (addr === targetAddress) {
                 appendLog("发现目标设备，开始配对")
-                bt.registerPairingAgent("8888")
+                bt.registerPairingAgent()
             }
         }
 
@@ -65,18 +109,46 @@ ApplicationWindow {
         onConnected: {
             appendLog("已连接到设备")
             isConnected = true
+            isBusy = false    // 解锁UI
+            disconnectWatchdog.stop()  // 停止看门狗
         }
 
         onDisconnected: {
             appendLog("已断开连接")
             isConnected = false
-            appWin.pairedLogged = false  // 重置状态
-            bt.startScan()
+            forceResetState()
         }
 
         onErrorOccurred: function(err) {
-            var errorMsg = String(err)
-            appendLog("蓝牙错误: " + errorMsg)
+            appendLog("蓝牙错误: " + err)
+            forceResetState()
+        }
+    }
+
+    Timer {
+        interval: 20; running: true; repeat: true
+        onTriggered: {
+            if (isConnected) {
+                let b_up = inputStates["上升"] ? 1 : 0
+                let b_down = inputStates["下降"] ? 1 : 0
+                let b_left = inputStates["左旋"] ? 1 : 0
+                let b_right = inputStates["右旋"] ? 1 : 0
+
+                tx_monitor_up = b_up
+                tx_monitor_down = b_down
+                tx_monitor_left = b_left
+                tx_monitor_right = b_right
+
+                bt.sendControlData(left_stickAngle, left_stickDistance,
+                                   b_up, b_down, b_left, b_right)
+                sum++
+            }
+            else {
+                if(tx_monitor_up) tx_monitor_up = false
+                if(tx_monitor_down) tx_monitor_down = false
+                if(tx_monitor_left) tx_monitor_left = false
+                if(tx_monitor_right) tx_monitor_right = false
+            }
         }
     }
 
@@ -101,54 +173,6 @@ ApplicationWindow {
                 // anchors.horizontalCenter: parent.horizontalCenter
             }
         }
-    }
-
-    property real left_stickAngle: 0
-    property real left_stickDistance: 0
-    property real right_stickAngle: 0
-    property real right_stickDistance: 0
-
-    property int sum: 0
-    property int num: 0
-
-    Component.onCompleted: {
-        bt.startScan()
-    }
-
-    Timer {
-        interval: 20; running: true; repeat: true
-        onTriggered: {
-            if (isConnected) {
-                var a = inputStates["上升"] ? 1 : 0
-                var b = inputStates["下降"] ? 1 : 0
-                var c = inputStates["左旋"] ? 1 : 0
-                var d = inputStates["右旋"] ? 1 : 0
-
-                const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${a};${b};${c};${d}]`
-                // const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${right_stickAngle.toFixed(1)};${right_stickDistance.toFixed(2)};${0};${0}]`
-                const crc = calculateCRC(dataPart)
-                const payload = `${dataPart}${crc}\n`
-
-                bt.sendMessage(payload)
-                sum++
-            }
-        }
-    }
-
-    function calculateCRC(str) {
-        let crc = 0xFFFF
-        for (let i = 0; i < str.length; i++) {
-            crc ^= str.charCodeAt(i)
-            for (let j = 0; j < 8; j++) {
-                const bit = crc & 1
-                crc >>= 1
-                if (bit) crc ^= 0xA001
-            }
-        }
-        const lo = crc & 0xFF
-        const hi = (crc >> 8) & 0xFF
-        return hi.toString(16).padStart(2,'0').toUpperCase()
-             + lo.toString(16).padStart(2,'0').toUpperCase()
     }
 
     Row {
@@ -249,13 +273,27 @@ ApplicationWindow {
                 Repeater {
                     model: ["上升", "下降", "左旋", "右旋"]
                     Button {
-                        text: modelData; checkable: true
+                        text: modelData;
                         width: 80; height: 48
                         onPressed:  inputStates[modelData] = true
                         onReleased: inputStates[modelData] = false
+                        property bool isActiveData: {
+                            switch(modelData)
+                            {
+                                case "上升": return tx_monitor_up;
+                                case "下降": return tx_monitor_down;
+                                case "左旋": return tx_monitor_left;
+                                case "右旋": return tx_monitor_right;
+                                default: return false;
+                            }
+                        }
+
                         background: Rectangle {
                             color: pressed ? "#4CAF50" : "#E0E0E0"
                             radius: 4
+
+                            border.width: parent.pressed ? 2 : 0
+                            border.color: "#2E7D32"
                         }
                         contentItem: Text {
                             text: parent.text
