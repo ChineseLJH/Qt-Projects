@@ -23,6 +23,7 @@ public:
     Q_INVOKABLE void startScan();                                            // 扫描设备
     Q_INVOKABLE void connectToDevice(const QString &address, const QString &uuidStr); // 连接指定地址与信道
     Q_INVOKABLE void disconnect();                                           // 断开连接
+    Q_INVOKABLE void abortconnection();                                      // 强制断开
     Q_INVOKABLE void sendMessage(const QString &msg);                        // 发送消息
 
     // Q_INVOKABLE void pairDevice(const QString &address, const QString &password); // 声明接口

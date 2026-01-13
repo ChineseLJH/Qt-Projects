@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.impl
+import QtQuick.Layouts 1.15
 import MyApp 1.0    // BluetoothManager
 import "."         // Joystick.qml
 
@@ -19,6 +20,15 @@ ApplicationWindow {
 
     property bool isBusy: false
 
+    property var inputStates:{
+        "上升": false, "下降": false,
+        "左旋": false, "右旋": false
+    }
+
+    property bool tx_monitor_up: false
+    property bool tx_monitor_down: false
+    property bool tx_monitor_left: false
+    property bool tx_monitor_right: false
 
     function appendLog(msg) {
         const time = new Date().toLocaleTimeString()
@@ -77,13 +87,18 @@ ApplicationWindow {
         property string pin: ""
 
         Column {
+            anchors.centerIn: parent
             spacing: 10
-            Text { text: "请输入以下 PIN 码完成配对：" }
+            Text {
+                text: "请输入以下 PIN 码完成配对："
+                Layout.alignment: Qt.AlignHCenter
+            }
             Text {
                 text: pairingDialog.pin
                 font.pixelSize: 24
+                Layout.alignment: Qt.AlignHCenter
                 horizontalAlignment: Text.AlignHCenter
-                anchors.horizontalCenter: parent.horizontalCenter
+                // anchors.horizontalCenter: parent.horizontalCenter
             }
         }
     }
@@ -92,11 +107,6 @@ ApplicationWindow {
     property real left_stickDistance: 0
     property real right_stickAngle: 0
     property real right_stickDistance: 0
-
-    property var inputStates: {
-        "上升": false, "下降": false,
-        "左旋": false, "右旋": false
-    }
 
     property int sum: 0
     property int num: 0
@@ -109,10 +119,10 @@ ApplicationWindow {
         interval: 20; running: true; repeat: true
         onTriggered: {
             if (isConnected) {
-                var a = buttonStates["上升"] ? 1 : 0
-                var b = buttonStates["下降"] ? 1 : 0
-                var c = buttonStates["左旋"] ? 1 : 0
-                var d = buttonStates["右旋"] ? 1 : 0
+                var a = inputStates["上升"] ? 1 : 0
+                var b = inputStates["下降"] ? 1 : 0
+                var c = inputStates["左旋"] ? 1 : 0
+                var d = inputStates["右旋"] ? 1 : 0
 
                 const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${a};${b};${c};${d}]`
                 // const dataPart = `[${left_stickAngle.toFixed(1)};${left_stickDistance.toFixed(2)};${right_stickAngle.toFixed(1)};${right_stickDistance.toFixed(2)};${0};${0}]`
@@ -241,8 +251,8 @@ ApplicationWindow {
                     Button {
                         text: modelData; checkable: true
                         width: 80; height: 48
-                        onPressed:  buttonStates[modelData] = true
-                        onReleased: buttonStates[modelData] = false
+                        onPressed:  inputStates[modelData] = true
+                        onReleased: inputStates[modelData] = false
                         background: Rectangle {
                             color: pressed ? "#4CAF50" : "#E0E0E0"
                             radius: 4

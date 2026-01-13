@@ -45,7 +45,7 @@ BluetoothManager::BluetoothManager(QObject *parent)
             this,
             &BluetoothManager::onSocketReadyRead);
 
-    // 错误信号（Qt6 已改名为 errorOccurred）
+    // 错误信号
     connect(m_socket,
             &QBluetoothSocket::errorOccurred,
             this,
@@ -54,9 +54,12 @@ BluetoothManager::BluetoothManager(QObject *parent)
 
 BluetoothManager::~BluetoothManager()
 {
-    delete m_localDevice;
+    // delete m_localDevice;
     if (m_socket->isOpen())
+    {
+        m_socket->abort();
         m_socket->close();
+    }
 }
 
 
@@ -93,7 +96,21 @@ void BluetoothManager::disconnect()
     m_socket->disconnectFromService();
 }
 
+void BluetoothManager::abortconnection()
+{
+    if(m_socket)
+    {
+        m_socket->abort();
+        m_socket->close();
+    }
+}
+
 void BluetoothManager::sendMessage(const QString &msg) {
+    if(!m_socket)
+    {
+        return ;
+    }
+
     if (m_socket->state() == QBluetoothSocket::SocketState::ConnectedState) {
         m_socket->write(msg.toUtf8()); // 正确转换为UTF-8字节流
     }
