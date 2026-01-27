@@ -20,6 +20,8 @@ ApplicationWindow {
 
     property bool isBusy: false
 
+    property bool pairedLogged: false
+
     property var inputStates:{
         "上升": false, "下降": false,
         "左旋": false, "右旋": false
@@ -56,7 +58,10 @@ ApplicationWindow {
         // 2.释放 UI 锁
         isBusy = false
         isConnected = false
-        appWin.pairedLogged = flase
+
+        if(appWin.pairedLogged !== undefined) {
+                     appWin.pairedLogged = false
+        }
 
         // 3.状态处理
         tx_monitor_up = false
@@ -128,6 +133,15 @@ ApplicationWindow {
     Timer {
         interval: 20; running: true; repeat: true
         onTriggered: {
+            if (!isConnected) {
+                    // 你的代码第 18-19 行已经做了部分清除，但不够彻底
+                    // 建议在这里显式复位所有控制位
+                    tx_monitor_up = false
+                    tx_monitor_down = false
+                    tx_monitor_left = false
+                    tx_monitor_right = false
+                    return // 直接返回，不执行发送
+            }
             if (isConnected) {
                 let b_up = inputStates["上升"] ? 1 : 0
                 let b_down = inputStates["下降"] ? 1 : 0
@@ -275,8 +289,9 @@ ApplicationWindow {
                     Button {
                         text: modelData;
                         width: 80; height: 48
-                        onPressed:  inputStates[modelData] = true
-                        onReleased: inputStates[modelData] = false
+                        onPressedChanged: {
+                                inputStates[modelData] = pressed
+                        }
                         property bool isActiveData: {
                             switch(modelData)
                             {
