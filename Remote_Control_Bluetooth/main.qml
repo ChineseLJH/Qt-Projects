@@ -23,8 +23,8 @@ ApplicationWindow {
     property bool pairedLogged: false
 
     property var inputStates:{
-        "上升": false, "下降": false,
-        "左旋": false, "右旋": false
+        "up": false, "down": false,
+        "left": false, "right": false
     }
 
     property bool tx_monitor_up: false
@@ -142,27 +142,19 @@ ApplicationWindow {
                     tx_monitor_right = false
                     return // 直接返回，不执行发送
             }
-            if (isConnected) {
-                let b_up = inputStates["上升"] ? 1 : 0
-                let b_down = inputStates["下降"] ? 1 : 0
-                let b_left = inputStates["左旋"] ? 1 : 0
-                let b_right = inputStates["右旋"] ? 1 : 0
+            let b_up = inputStates["up"] ? 1 : 0
+            let b_down = inputStates["down"] ? 1 : 0
+            let b_left = inputStates["left"] ? 1 : 0
+            let b_right = inputStates["right"] ? 1 : 0
 
-                tx_monitor_up = b_up
-                tx_monitor_down = b_down
-                tx_monitor_left = b_left
-                tx_monitor_right = b_right
+            tx_monitor_up = b_up
+            tx_monitor_down = b_down
+            tx_monitor_left = b_left
+            tx_monitor_right = b_right
 
-                bt.sendControlData(left_stickAngle, left_stickDistance,
-                                   b_up, b_down, b_left, b_right)
-                sum++
-            }
-            else {
-                if(tx_monitor_up) tx_monitor_up = false
-                if(tx_monitor_down) tx_monitor_down = false
-                if(tx_monitor_left) tx_monitor_left = false
-                if(tx_monitor_right) tx_monitor_right = false
-            }
+            bt.sendControlData(left_stickAngle, left_stickDistance,
+                               b_up, b_down, b_left, b_right)
+            sum++
         }
     }
 
@@ -285,20 +277,36 @@ ApplicationWindow {
             Column {
                 anchors.centerIn: parent; spacing: 16
                 Repeater {
-                    model: ["上升", "下降", "左旋", "右旋"]
+                    model: [
+                        { label: "上升", key: "up" },
+                        { label: "下降", key: "down" },
+                        { label: "左旋", key: "left" },
+                        { label: "右旋", key: "right" }
+                    ]
                     Button {
-                        text: modelData;
+                        // 1. 修改：取 label 显示中文
+                        text: modelData.label
                         width: 80; height: 48
+
+                        // 2. 修改：取 key 存状态 (up/down/left/right)
                         onPressedChanged: {
-                                inputStates[modelData] = pressed
+                            inputStates[modelData.key] = pressed
                         }
+                        onReleased: {
+                            inputStates[modelData.key] = false
+                        }
+                        onCanceled: {
+                            inputStates[modelData.key] = false
+                        }
+
                         property bool isActiveData: {
-                            switch(modelData)
+                            // 3. 修改：用 key 进行 switch 判断
+                            switch(modelData.key)
                             {
-                                case "上升": return tx_monitor_up;
-                                case "下降": return tx_monitor_down;
-                                case "左旋": return tx_monitor_left;
-                                case "右旋": return tx_monitor_right;
+                                case "up": return tx_monitor_up;
+                                case "down": return tx_monitor_down;
+                                case "left": return tx_monitor_left;
+                                case "right": return tx_monitor_right;
                                 default: return false;
                             }
                         }
@@ -306,7 +314,6 @@ ApplicationWindow {
                         background: Rectangle {
                             color: parent.isActiveData ? "#4CAF50" : "#E0E0E0"
                             radius: 4
-
                             border.width: parent.pressed ? 2 : 0
                             border.color: "#2E7D32"
                         }
