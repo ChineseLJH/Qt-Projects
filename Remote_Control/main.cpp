@@ -1,16 +1,15 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include "tcpclient.h"
+#include "udpdataclient.h"
 #include "myudp.h"
-
-
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<MyUdp>("MyApp", 1, 0, "MyUdp");
-    qmlRegisterType<TcpClient>("MyApp", 1, 0, "TcpClient");
+
+    qmlRegisterType<UdpDataClient>("MyApp", 1, 0, "UdpDataClient");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

@@ -4,11 +4,11 @@ CONFIG += c++17
 SOURCES += \
         main.cpp \
         myudp.cpp \
-        tcpclient.cpp
+        udpdataclient.cpp
 
 HEADERS += \
     myudp.h \
-    tcpclient.h
+    udpdataclient.h
 
 resources.prefix = /$${TARGET}
 RESOURCES += qml.qrc
