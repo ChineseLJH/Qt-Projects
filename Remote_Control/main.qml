@@ -2,14 +2,18 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import MyApp 1.0    // TcpClient
-import "."         // Joystick.qml
+import "."
+
+// Joystick.qml
 
 ApplicationWindow {
     id: appWin
-    width: 800; height: 480
+    width: 800;
+    height: 480
     visible: true
     title: qsTr("遥控器")
-    flags: Qt.Window | Qt.CustomizeWindowHint
+    flags: Qt.Window |
+    Qt.CustomizeWindowHint
 
     property string targetIp: ""
 
@@ -43,14 +47,6 @@ ApplicationWindow {
     TcpClient { id: tcp }
 
     // —— 接收信号 —— //
-    // Connections {
-    //     target: tcp
-    //     onDataReceived: function(data) {
-    //         if(parseInt(data) > num)
-    //             num = parseInt(data)  // 把ESP32发回来的“已收到总数”存为 num
-    //     }
-    // }
-
     Connections {
         target: tcp
         onDataReceived: function(data) {
@@ -72,10 +68,8 @@ ApplicationWindow {
     // —— CRC-16校验计算 —— //
     function calculateCRC(str) {
             let crc = 0xFFFF;
-
             for (let i = 0; i < str.length; i++) {
                 crc ^= str.charCodeAt(i);
-
                 for (let j = 0; j < 8; j++) {
                     const bit = crc & 0x0001;
                     crc >>= 1;
@@ -85,28 +79,21 @@ ApplicationWindow {
             //MODBUS 等协议要求 CRC 以 小端模式（Little-Endian） 传输，即低字节在前、高字节在后
             const lo = crc & 0xFF;
             const hi = (crc >> 8) & 0xFF;
-            // return lo.toString(16).padStart(2, '0').toUpperCase() +
-            //        hi.toString(16).padStart(2, '0').toUpperCase();
             return  hi.toString(16).padStart(2, '0').toUpperCase()+
                     lo.toString(16).padStart(2, '0').toUpperCase();
-            // return crc;
         }
 
 
     // —— 50Hz 发送定时器 —— //
     Timer {
-        interval: 20; running: true; repeat: true
+        interval: 20;
+        running: true; repeat: true
         onTriggered: {
             if (tcp.connected) {
                 const a = buttonStates["前倾"] ? 1 : 0
                 const b = buttonStates["后仰"] ? 1 : 0
                 const c = buttonStates["击球"] ? 1 : 0
                 const d = buttonStates["备用1"] ? 1 : 0
-
-
-                // const payload = [${stickAngle.toFixed(1)};${stickDistance.toFixed(2)};${a};${b};${c};${d}]\n
-                // tcp.sendMessage(payload)
-                // sum++
 
                 // 构造数据部分（不包含换行符）
                 const dataPart = `[${stickAngle.toFixed(1)};${stickDistance.toFixed(2)};${a};${b};${c};${d}]`
@@ -120,23 +107,6 @@ ApplicationWindow {
             }
         }
     }
-
-    // // —— 50Hz 发送定时器 —— //
-    // Timer {
-    //     interval: 20; running: true; repeat: true
-    //     onTriggered: {
-    //         if (tcp.connected) {
-    //             const a = buttonStates.A ? 1 : 0
-    //             const b = buttonStates.B ? 1 : 0
-    //             const c = buttonStates.C ? 1 : 0
-    //             const d = buttonStates.D ? 1 : 0
-
-    //             const payload = [${stickAngle.toFixed(1)};${stickDistance.toFixed(2)};${a};${b};${c};${d}]\n
-    //             tcp.sendMessage(payload)
-    //             sum++
-    //         }
-    //     }
-    // }
 
     Row {
         anchors.fill: parent
@@ -178,13 +148,6 @@ ApplicationWindow {
                         : "丢包: " + ((1 - num / sum) * 100).toFixed(2) + "%"
                     font.pixelSize: 24
                 }
-                // Text {
-                //     text: (sum === 0)
-                //         ? "丢包：N/A；N=" + num + "，S=" + sum
-                //         : "丢包：" + ((1 - num / sum) * 100).toFixed(2) + "%；N=" + num + "，S=" + sum
-                //     font.pixelSize: 24
-                // }
-
 
                 Button {
                     width: 160; height: 48
@@ -216,10 +179,15 @@ ApplicationWindow {
                     model: ["前倾", "后仰", "击球", "备用1"]
                     Button {
                         text: modelData
-                        checkable: true
                         width: 80; height: 48
-                        onPressed: buttonStates[modelData] = true
-                        onReleased: buttonStates[modelData] = false
+
+                        // 【核心修改】监听底层 pressed 属性变更与系统级取消事件
+                        onPressedChanged: {
+                            buttonStates[modelData] = pressed
+                        }
+                        onCanceled: {
+                            buttonStates[modelData] = false
+                        }
 
                         background: Rectangle {
                             color: parent.pressed ? "#4CAF50" : "#E0E0E0"
