@@ -38,27 +38,21 @@ ApplicationWindow {
     }
 
     // —— 计数器 —— //
-    property int sum: 0
-    property int num: 0
+    property var txHistory: []
+    property var rxHistory: []
+    property real currentLossRate: 0.0
+    property bool hasEnoughData: false
 
     // 【核心修改 1】实例化新的底层 UDP 数据发送类
     UdpDataClient { id: udpData }
 
     // —— 接收信号 —— //
     Connections {
-        target: udpData  // 【核心修改 2】绑定目标更改为 udpData
+        target: udpData
         onDataReceived: function(data) {
-            // 获取当前时间
-            const now = new Date()
-            const timeString = now.getHours().toString().padStart(2, '0') + ":" +
-                               now.getMinutes().toString().padStart(2, '0') + ":" +
-                               now.getSeconds().toString().padStart(2, '0') + "." +
-                               now.getMilliseconds().toString().padStart(3, '0')
-
-            console.log("接收到数据:", data, "时间:", timeString)
-
-            if (parseInt(data) > num)
-                num = parseInt(data)
+            if (udpData.connected) {
+                rxHistory.push(Date.now())
+            }
         }
     }
 
@@ -101,10 +95,44 @@ ApplicationWindow {
                 const payload = `${dataPart}${crc}\n`
 
                 udpData.sendMessage(payload) // 【核心修改 4】执行无状态的 UDP 数据报发送
-                sum++
+                txHistory.push(Date.now())
             }
         }
     }
+
+    Timer {
+            interval: 200
+            running: true
+            repeat: true
+            onTriggered: {
+                const now = Date.now()
+                const cutoff = now - 10000 // 严格界定 10 秒（10000 毫秒）的积分下限
+
+                // 1. 内存裁剪（O(n) 复杂度）：剔除时间窗口之外的过期元素
+                while (txHistory.length > 0 && txHistory[0] < cutoff) {
+                    txHistory.shift()
+                }
+                while (rxHistory.length > 0 && rxHistory[0] < cutoff) {
+                    rxHistory.shift()
+                }
+
+                // 2. 统计计算：需要累计至少 1 秒的数据（约 50 个发包）才显示结果，避免初始数据毛刺
+                if (txHistory.length < 50) {
+                    hasEnoughData = false
+                } else {
+                    hasEnoughData = true
+                    // 乘法补偿：因为下位机配置为 10 个包触发一次 ACK
+                    // 预期收到 ACK 数量 = txHistory.length / 10
+                    let estReceived = rxHistory.length * 10
+
+                    let rate = 1.0 - (estReceived / txHistory.length)
+
+                    // 边界钳位：防止因 10:1 量化误差导致的临时负溢出
+                    if (rate < 0) rate = 0.0
+                    currentLossRate = rate * 100
+                }
+            }
+        }
 
     Row {
         anchors.fill: parent
@@ -141,9 +169,19 @@ ApplicationWindow {
                 Text { text: "角度: " + stickAngle.toFixed(1) + "°"; font.pixelSize: 24 }
                 Text { text: "速度: " + stickDistance.toFixed(3); font.pixelSize: 24 }
                 Text {
-                    text: (sum === 0)
-                        ? "丢包: N/A"
-                        : "丢包: " + ((1 - num / sum) * 100).toFixed(2) + "%"
+                    // 使用 JavaScript 的闭包/代码块来进行严谨的状态机判断
+                    text: {
+                        if (!udpData.connected) {
+                            // 状态 1：底层 UDP Socket 未连接或已手动断开，停止发送
+                            return "丢包: N/A"
+                        } else if (!hasEnoughData) {
+                            // 状态 2：Socket 已连接正在发送，但 txHistory 数组长度小于设定的 50 个下限
+                            return "丢包: 采样缓冲中..."
+                        } else {
+                            // 状态 3：数组数据饱满，执行浮点数渲染
+                            return "丢包: " + currentLossRate.toFixed(2) + "%"
+                        }
+                    }
                     font.pixelSize: 24
                 }
 
