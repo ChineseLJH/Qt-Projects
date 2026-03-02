@@ -76,25 +76,40 @@ ApplicationWindow {
     }
 
 
-    // —— 50Hz 发送定时器 —— //
+    // 增加一个私有变量用于记录静止帧数
+    property int idleFrameCount: 0
+
     Timer {
-        interval: 20;
+        interval: 20; // 维持 50Hz 采样率
         running: true; repeat: true
         onTriggered: {
-            if (udpData.connected) {  // 【核心修改 3】引用的状态标志替换
+            if (udpData.connected) {
+                // 1. 判断是否处于物理静止态 (摇杆归零且按键全部松开)
+                let isIdle = (stickAngle === 0 && stickDistance === 0 &&
+                              !buttonStates["前倾"] && !buttonStates["后仰"] &&
+                              !buttonStates["击球"] && !buttonStates["备用1"]);
+
+                if (isIdle) {
+                    idleFrameCount++;
+                    // 如果连续静止超过 100ms (5 帧)，则每 5 帧只发 1 帧 (降频至 10Hz)
+                    // 这既能维持心跳检测，又极大清空了信道占用
+                    if (idleFrameCount > 5 && (idleFrameCount % 5 !== 0)) {
+                        return;
+                    }
+                } else {
+                    idleFrameCount = 0; // 一旦有动作，立刻恢复 50Hz 实时性
+                }
+
                 const a = buttonStates["前倾"] ? 1 : 0
                 const b = buttonStates["后仰"] ? 1 : 0
                 const c = buttonStates["击球"] ? 1 : 0
                 const d = buttonStates["备用1"] ? 1 : 0
 
-                // 构造数据部分（不包含换行符）
                 const dataPart = `[${stickAngle.toFixed(1)};${stickDistance.toFixed(2)};${a};${b};${c};${d}]`
-
-                // 计算CRC并拼接
                 const crc = calculateCRC(dataPart)
                 const payload = `${dataPart}${crc}\n`
 
-                udpData.sendMessage(payload) // 【核心修改 4】执行无状态的 UDP 数据报发送
+                udpData.sendMessage(payload)
                 txHistory.push(Date.now())
             }
         }
