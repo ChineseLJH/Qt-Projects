@@ -86,8 +86,10 @@ ApplicationWindow {
             if (udpData.connected) {
                 // 1. 判断是否处于物理静止态 (摇杆归零且按键全部松开)
                 let isIdle = (stickAngle === 0 && stickDistance === 0 &&
-                              !buttonStates["前倾"] && !buttonStates["后仰"] &&
-                              !buttonStates["击球"] && !buttonStates["备用1"]);
+                                              !buttonStates["前倾"] && !buttonStates["后仰"] &&
+                                              !buttonStates["击球"] && !buttonStates["备用1"] &&
+                                              !buttonStates["A"] && !buttonStates["B"] &&
+                                              !buttonStates["C"] && !buttonStates["D"]);
 
                 if (isIdle) {
                     idleFrameCount++;
@@ -105,7 +107,13 @@ ApplicationWindow {
                 const c = buttonStates["击球"] ? 1 : 0
                 const d = buttonStates["备用1"] ? 1 : 0
 
-                const dataPart = `[${stickAngle.toFixed(1)};${stickDistance.toFixed(2)};${a};${b};${c};${d}]`
+                const btnA = buttonStates["A"] ? 1 : 0
+                const btnB = buttonStates["B"] ? 1 : 0
+                const btnC = buttonStates["C"] ? 1 : 0
+                const btnD = buttonStates["D"] ? 1 : 0
+
+                // 将数据格式扩展，拼入 ABCD 的状态
+                const dataPart = `[${stickAngle.toFixed(1)};${stickDistance.toFixed(2)};${a};${b};${c};${d};${btnA};${btnB};${btnC};${btnD}]`
                 const crc = calculateCRC(dataPart)
                 const payload = `${dataPart}${crc}\n`
 
@@ -216,44 +224,64 @@ ApplicationWindow {
         }
 
         // 右侧按钮容器
-        Item {
-            id: buttonPanel
-            width: parent.width * 0.25
-            anchors.verticalCenter: parent.verticalCenter
-            height: joystickContainer.height
+        // 右侧按钮容器
+                Item {
+                    id: buttonPanel
+                    width: parent.width * 0.25
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: joystickContainer.height
 
-            Column {
-                anchors.centerIn: parent
-                spacing: 16
+                    // 提取公共按钮组件，避免代码重复
+                    Component {
+                        id: controlButton
+                        Button {
+                            text: modelData
+                            width: 80; height: 48
 
-                Repeater {
-                    model: ["前倾", "后仰", "击球", "备用1"]
-                    Button {
-                        text: modelData
-                        width: 80; height: 48
+                            onPressedChanged: {
+                                buttonStates[modelData] = pressed
+                            }
+                            onCanceled: {
+                                buttonStates[modelData] = false
+                            }
 
-                        // 监听底层 pressed 属性变更与系统级取消事件
-                        onPressedChanged: {
-                            buttonStates[modelData] = pressed
+                            background: Rectangle {
+                                color: parent.pressed ? "#4CAF50" : "#E0E0E0"
+                                radius: 4
+                            }
+
+                            contentItem: Text {
+                                text: parent.text
+                                color: parent.pressed ? "white" : "black"
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
                         }
-                        onCanceled: {
-                            buttonStates[modelData] = false
+                    }
+
+                    // 使用 Row 将两列按钮横向组合在中心
+                    Row {
+                        anchors.centerIn: parent
+                        spacing: 20 // 两列之间的间距
+
+                        // 第一列按钮
+                        Column {
+                            spacing: 16
+                            Repeater {
+                                model: ["前倾", "后仰", "击球", "备用1"]
+                                delegate: controlButton
+                            }
                         }
 
-                        background: Rectangle {
-                            color: parent.pressed ? "#4CAF50" : "#E0E0E0"
-                            radius: 4
-                        }
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: parent.pressed ? "white" : "black"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
+                        // 第二列按钮
+                        Column {
+                            spacing: 16
+                            Repeater {
+                                model: ["A", "B", "C", "D"]
+                                delegate: controlButton
+                            }
                         }
                     }
                 }
-            }
-        }
     }
 }
