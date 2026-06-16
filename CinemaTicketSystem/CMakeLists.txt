@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
 project(CinemaTicketSystem VERSION 0.1 LANGUAGES CXX)
 
@@ -8,14 +8,26 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        main.cpp
-        widget.cpp
-        widget.h
+    src/main.cpp
+    src/widget.h
+    src/widget.cpp
+    src/core/core_structs.h
+    src/core/cinema_manager.h
+    src/core/cinema_manager.cpp
+    src/gui/homeview.h
+    src/gui/homeview.cpp
+    src/gui/movielistview.h
+    src/gui/movielistview.cpp
+    src/gui/seatselectionview.h
+    src/gui/seatselectionview.cpp
+    src/gui/checkoutview.h
+    src/gui/checkoutview.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -42,6 +54,7 @@ else()
 endif()
 
 target_link_libraries(CinemaTicketSystem PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
