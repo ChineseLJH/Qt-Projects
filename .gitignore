@@ -69,3 +69,5 @@ android-build/
 
 .idea/
 *.iml
+
+.vscode/
