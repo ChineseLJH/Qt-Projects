@@ -1,5 +1,4 @@
 #include "widget.h"
-// 引入刚刚写好的头文件
 #include "gui/homeview.h"
 #include "gui/movielistview.h"
 #include "gui/seatselectionview.h"
@@ -14,19 +13,20 @@ Widget::Widget(QWidget *parent)
     this->resize(1024, 768); 
     this->setWindowTitle("智能电影院售票系统");
 
-    QString exePath = QCoreApplication::applicationDirPath();
+    // 1. 核心修正：利用物理相对路径，从 build/ 目录向上跳转一级，将寻址基址强行重定向至源码根目录
+    QString sourceRootPath = QCoreApplication::applicationDirPath() + "/../";
     
     manager = new CinemaManager();
-    manager->initializeData(exePath.toUtf8().constData());
+    // 确保初始化时直接读取源码目录下的文本数据
+    manager->initializeData(sourceRootPath.toUtf8().constData());
 
     setupUi();
 
-    movieListView->loadMovies(manager);
+    // 构造函数中不再执行一次性载入，移交给路由控制器动态接管
     connectSignals();
 }
 
 Widget::~Widget() {
-    // 释放底层核心管理器的内存
     delete manager;
 }
 
@@ -37,21 +37,17 @@ void Widget::setupUi()
 
     mainStack = new QStackedWidget(this);
 
-    // 1. 实例化各个页面对象（在堆上分配内存）
     homeView = new HomeView(this);
     movieListView = new MovieListView(this);
     seatSelectionView = new SeatSelectionView(this);
     checkoutView = new CheckoutView(this);
 
-    // 2. 按枚举顺序将页面压入堆栈容器
-    mainStack->addWidget(homeView);          // Index 0 (HOME_PAGE)
-    mainStack->addWidget(movieListView);     // Index 1 (MOVIE_LIST_PAGE)
-    mainStack->addWidget(seatSelectionView); // Index 2 (SEAT_SELECTION_PAGE)
-    mainStack->addWidget(checkoutView);      // Index 3 (CHECKOUT_PAGE)
+    mainStack->addWidget(homeView);          
+    mainStack->addWidget(movieListView);     
+    mainStack->addWidget(seatSelectionView); 
+    mainStack->addWidget(checkoutView);      
 
     mainLayout->addWidget(mainStack);
-
-    // 设置程序启动时默认显示第 0 页
     mainStack->setCurrentIndex(HOME_PAGE);
 }
 
@@ -65,13 +61,12 @@ void Widget::connectSignals()
 
     connect(movieListView, &MovieListView::requestSeatSelection, this, [=](int movieId) {
         currentMovieId = movieId; 
-        int targetHallId = (movieId == 101) ? 1 : 2; 
+        int targetHallId = (movieId == 101) ? 1 : (movieId == 102 ? 2 : 3); 
         Hall *targetHall = manager->getHallById(targetHallId);
         seatSelectionView->loadHallData(targetHall);
         navigateTo(SEAT_SELECTION_PAGE);
     });
 
-    // 核心修正 1：形参必须接收 QList 容器以匹配新的路由协议
     connect(seatSelectionView, &SeatSelectionView::requestCheckout, this, [=](QList<QPoint> seats) {
         Movie *targetMovie = nullptr;
         for(int i = 0; i < manager->getMovieCount(); ++i) {
@@ -80,7 +75,7 @@ void Widget::connectSignals()
                 break;
             }
         }
-        int targetHallId = (currentMovieId == 101) ? 1 : 2; 
+        int targetHallId = (currentMovieId == 101) ? 1 : (currentMovieId == 102 ? 2 : 3); 
         Hall *targetHall = manager->getHallById(targetHallId);
 
         checkoutView->loadOrderData(targetMovie, targetHall, seats);
@@ -95,13 +90,11 @@ void Widget::connectSignals()
         navigateTo(SEAT_SELECTION_PAGE);
     });
 
-    // 核心修正 2：承接结算页数据并执行持久化内存调度
     connect(checkoutView, &CheckoutView::requestReturnHome, this, [=](QList<QPoint> confirmedSeats) {
         int count = confirmedSeats.size();
         if (count > 0) {
-            int hallId = (currentMovieId == 101) ? 1 : 2; 
+            int hallId = (currentMovieId == 101) ? 1 : (currentMovieId == 102 ? 2 : 3); 
             
-            // 内存降维：将对象容器的离散坐标提取至连续的堆区原生数组中
             int *rawRows = new int[count];
             int *rawCols = new int[count];
             for(int i = 0; i < count; ++i) {
@@ -109,10 +102,10 @@ void Widget::connectSignals()
                 rawCols[i] = confirmedSeats[i].y();
             }
 
-            QString exePath = QCoreApplication::applicationDirPath();
-            manager->saveBookedSeats(hallId, rawRows, rawCols, count, exePath.toUtf8().constData());
+            // 2. 核心修正：持久化写入时同样重定向至源码根目录，直接覆写原始的 seats.txt
+            QString sourceRootPath = QCoreApplication::applicationDirPath() + "/../";
+            manager->saveBookedSeats(hallId, rawRows, rawCols, count, sourceRootPath.toUtf8().constData());
 
-            // 严格对齐 new 与 delete 边界
             delete[] rawRows;
             delete[] rawCols;
         }
@@ -123,7 +116,9 @@ void Widget::connectSignals()
 
 void Widget::navigateTo(Page page)
 {
-    // 修改堆栈的当前索引
-    // 底层机制是隐藏当前显示的 QWidget 指针，并调用目标 QWidget 指针的 show() 方法引发重绘
+    // 3. 核心修正：切入拦截钩子。一旦状态机路由指向排片列表页，强制重新遍历内存矩阵并重建 UI 卡片
+    if (page == MOVIE_LIST_PAGE) {
+        movieListView->loadMovies(manager); 
+    }
     mainStack->setCurrentIndex(page);
 }
