@@ -31,21 +31,33 @@ CheckoutView::CheckoutView(QWidget *parent) : QWidget(parent)
     mainLayout->addStretch();
 
     connect(btnCancel, &QPushButton::clicked, this, &CheckoutView::requestBackToSeatSelection);
-    connect(btnConfirm, &QPushButton::clicked, this, &CheckoutView::requestReturnHome);
+    connect(btnConfirm, &QPushButton::clicked, this, [=](){
+        emit requestReturnHome(pendingSeats);
+    });
 }
 
-void CheckoutView::loadOrderData(Movie *movie, Hall *hall, int row, int col)
+void CheckoutView::loadOrderData(Movie *movie, Hall *hall, QList<QPoint> seats)
 {
-    if (!movie || !hall) return;
+    if (!movie || !hall || seats.isEmpty()) return;
+    pendingSeats = seats;
 
-    // 使用纯 C 语言数组拼接最终的业务展示文本
-    char orderInfo[256];
+    // 解析所有座位的逻辑索引（物理索引+1）
+    char seatsStr[256] = "";
+    for (int i = 0; i < seats.size(); ++i) {
+        char temp[32];
+        snprintf(temp, sizeof(temp), "%d排%d座 ", seats[i].x() + 1, seats[i].y() + 1);
+        strcat(seatsStr, temp); // 内存追加拼装
+    }
+
+    double totalPrice = movie->price * seats.size();
+
+    char orderInfo[512];
     snprintf(orderInfo, sizeof(orderInfo), 
              "电影：%s\n"
              "影厅：%d 号厅\n"
-             "座位：%d 排 %d 座\n\n"
-             "应付金额：%.2f 元", 
-             movie->title, hall->hallId, row + 1, col + 1, movie->price); // 物理索引转逻辑索引(+1)
+             "座位：%s\n\n"
+             "应付总金额：%.2f 元", 
+             movie->title, hall->hallId, seatsStr, totalPrice); 
 
     titleLabel->setText(orderInfo);
 }

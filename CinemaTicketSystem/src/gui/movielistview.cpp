@@ -47,9 +47,10 @@ void MovieListView::loadMovies(CinemaManager *manager)
         Hall *hall = manager->getHallById(movies[i].targetHallId);
         int totalSeats = (hall != nullptr) ? hall->totalSeats : 0;
         int occupiedSeats = 0;
-        if (hall != nullptr && hall->seatMatrix != nullptr) {
+        if (hall != nullptr && hall->seatMatrix != nullptr && hall->colsPerRow != nullptr) {
             for (int r = 0; r < hall->rows; ++r) {
-                for (int c = 0; c < hall->cols; ++c) {
+                // 核心修正：内层循环的边界必须动态读取当前行的列数
+                for (int c = 0; c < hall->colsPerRow[r]; ++c) { 
                     if (hall->seatMatrix[r][c] == 1) occupiedSeats++;
                 }
             }

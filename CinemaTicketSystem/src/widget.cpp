@@ -5,6 +5,8 @@
 #include "gui/seatselectionview.h"
 #include "gui/checkoutview.h"
 #include <QCoreApplication>
+#include <QList>
+#include <QPoint>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -55,8 +57,6 @@ void Widget::setupUi()
 
 void Widget::connectSignals()
 {
-    // 利用堆区变量或 Lambda 静态捕获来维持状态流转。
-    // 这里使用 shared_ptr 或外部变量，最直接的方式是在 Lambda 外部定义一个静态变量记录 movieId。
     static int currentMovieId = -1;
 
     connect(homeView, &HomeView::requestBookTicket, this, [=]() {
@@ -64,16 +64,15 @@ void Widget::connectSignals()
     });
 
     connect(movieListView, &MovieListView::requestSeatSelection, this, [=](int movieId) {
-        currentMovieId = movieId; // 记录当前选择的电影ID
+        currentMovieId = movieId; 
         int targetHallId = (movieId == 101) ? 1 : 2; 
         Hall *targetHall = manager->getHallById(targetHallId);
         seatSelectionView->loadHallData(targetHall);
         navigateTo(SEAT_SELECTION_PAGE);
     });
 
-    // 捕获带有底层矩阵物理坐标的选座信号
-    connect(seatSelectionView, &SeatSelectionView::requestCheckout, this, [=](int row, int col) {
-        // 反查指针
+    // 核心修正 1：形参必须接收 QList 容器以匹配新的路由协议
+    connect(seatSelectionView, &SeatSelectionView::requestCheckout, this, [=](QList<QPoint> seats) {
         Movie *targetMovie = nullptr;
         for(int i = 0; i < manager->getMovieCount(); ++i) {
             if(manager->getMovies()[i].id == currentMovieId) {
@@ -84,16 +83,40 @@ void Widget::connectSignals()
         int targetHallId = (currentMovieId == 101) ? 1 : 2; 
         Hall *targetHall = manager->getHallById(targetHallId);
 
-        // 注入指针数据到结算页
-        checkoutView->loadOrderData(targetMovie, targetHall, row, col);
+        checkoutView->loadOrderData(targetMovie, targetHall, seats);
         navigateTo(CHECKOUT_PAGE);
+    });
+
+    connect(seatSelectionView, &SeatSelectionView::requestBackToMovieList, this, [=]() {
+        navigateTo(MOVIE_LIST_PAGE);
     });
 
     connect(checkoutView, &CheckoutView::requestBackToSeatSelection, this, [=]() {
         navigateTo(SEAT_SELECTION_PAGE);
     });
 
-    connect(checkoutView, &CheckoutView::requestReturnHome, this, [=]() {
+    // 核心修正 2：承接结算页数据并执行持久化内存调度
+    connect(checkoutView, &CheckoutView::requestReturnHome, this, [=](QList<QPoint> confirmedSeats) {
+        int count = confirmedSeats.size();
+        if (count > 0) {
+            int hallId = (currentMovieId == 101) ? 1 : 2; 
+            
+            // 内存降维：将对象容器的离散坐标提取至连续的堆区原生数组中
+            int *rawRows = new int[count];
+            int *rawCols = new int[count];
+            for(int i = 0; i < count; ++i) {
+                rawRows[i] = confirmedSeats[i].x();
+                rawCols[i] = confirmedSeats[i].y();
+            }
+
+            QString exePath = QCoreApplication::applicationDirPath();
+            manager->saveBookedSeats(hallId, rawRows, rawCols, count, exePath.toUtf8().constData());
+
+            // 严格对齐 new 与 delete 边界
+            delete[] rawRows;
+            delete[] rawCols;
+        }
+
         navigateTo(HOME_PAGE);
     });
 }

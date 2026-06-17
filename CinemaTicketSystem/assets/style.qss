@@ -99,3 +99,23 @@ QPushButton#movieBookBtn:hover {
 QPushButton#movieBookBtn:pressed {
     background-color: #A04000;
 }
+
+QPushButton#btnBack {
+    background-color: transparent;
+    color: #BDC3C7;
+    font-size: 16px;
+    border: 1px solid #7F8C8D;
+    border-radius: 4px;
+}
+QPushButton#btnBack:hover {
+    background-color: #34495E;
+    color: white;
+}
+QPushButton#btnSmart {
+    background-color: #8E44AD;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+QPushButton#btnSmart:hover { background-color: #9B59B6; }

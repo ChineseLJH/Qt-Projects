@@ -1,106 +1,98 @@
 #include "cinema_manager.h"
-#include <cstring> // 用于 strcpy 等 C 标准库字符操作
-#include <cstdio>  // 引入底层文件 I/O
+#include <cstring>
+#include <cstdio>
 #include <cstdlib>
 
-CinemaManager::CinemaManager() : halls(nullptr), hallCount(3), movies(nullptr), movieCount(0) {
-    // 构造函数中暂不分配大块内存，留给显式的 initializeData 调用
-}
+CinemaManager::CinemaManager() : halls(nullptr), hallCount(3), movies(nullptr), movieCount(0) {}
 
 CinemaManager::~CinemaManager() {
-    // 必须严格释放堆区内存，防止内存泄漏
     if (halls != nullptr) {
         for (int i = 0; i < hallCount; ++i) {
             freeSeatMatrix(halls[i].seatMatrix, halls[i].rows);
+            delete[] halls[i].colsPerRow; // 释放新增加的列宽记录数组
         }
         delete[] halls;
     }
-    if (movies != nullptr) {
-        delete[] movies;
-    }
+    if (movies != nullptr) delete[] movies;
 }
 
-// 底层二维指针矩阵分配逻辑
-int** CinemaManager::allocateSeatMatrix(int rows, int cols) {
-    // 1. 分配一个指针数组，存放每一行的首地址
+// 核心改动 1：根据传入的每行列数数组，动态分配非规则二维矩阵
+int** CinemaManager::allocateSeatMatrix(int rows, int *colsPerRow) {
     int **matrix = new int*[rows];
-    
-    // 2. 为每一行分配具体的整型数组，并初始化为 0 (空闲)
     for (int i = 0; i < rows; ++i) {
-        matrix[i] = new int[cols];
-        for (int j = 0; j < cols; ++j) {
-            matrix[i][j] = 0; 
+        matrix[i] = new int[colsPerRow[i]];
+        for (int j = 0; j < colsPerRow[i]; ++j) {
+            matrix[i][j] = 0; // 0代表空闲
         }
     }
     return matrix;
 }
 
-// 底层二维指针矩阵释放逻辑
 void CinemaManager::freeSeatMatrix(int **matrix, int rows) {
     if (matrix == nullptr) return;
-    for (int i = 0; i < rows; ++i) {
-        delete[] matrix[i]; // 释放列
-    }
-    delete[] matrix;        // 释放行指针数组
+    for (int i = 0; i < rows; ++i) delete[] matrix[i];
+    delete[] matrix;
 }
 
 void CinemaManager::initializeData(const char* exeDirPath) {
-    // 1. 初始化 3 个影厅的内存 (保持原来的代码不变)
     hallCount = 3;
     halls = new Hall[hallCount];
     
-    halls[0].hallId = 1; halls[0].totalSeats = 50; halls[0].rows = 5; halls[0].cols = 10;
-    halls[0].seatMatrix = allocateSeatMatrix(5, 10);
-    halls[1].hallId = 2; halls[1].totalSeats = 100; halls[1].rows = 10; halls[1].cols = 10;
-    halls[1].seatMatrix = allocateSeatMatrix(10, 10);
-    halls[2].hallId = 3; halls[2].totalSeats = 150; halls[2].rows = 10; halls[2].cols = 15;
-    halls[2].seatMatrix = allocateSeatMatrix(10, 15);
+    // 初始化一号厅：构造一个靠近荧幕少，远离荧幕多的梯形（扇形）内存结构
+    halls[0].hallId = 1; halls[0].totalSeats = 50; halls[0].rows = 5;
+    halls[0].colsPerRow = new int[5]{6, 8, 10, 12, 14}; // 累加正好 50 座
+    halls[0].seatMatrix = allocateSeatMatrix(5, halls[0].colsPerRow);
 
-    // 2. 动态拼装数据库文件的绝对物理路径
+    // 二号厅和三号厅同理，这里简写测试
+    halls[1].hallId = 2; halls[1].totalSeats = 100; halls[1].rows = 5;
+    halls[1].colsPerRow = new int[5]{16, 18, 20, 22, 24}; 
+    halls[1].seatMatrix = allocateSeatMatrix(5, halls[1].colsPerRow);
+
+    halls[2].hallId = 3; halls[2].totalSeats = 150; halls[2].rows = 6;
+    halls[2].colsPerRow = new int[6]{20, 22, 24, 26, 28, 30}; 
+    halls[2].seatMatrix = allocateSeatMatrix(6, halls[2].colsPerRow);
+
+    // 加载电影数据 (与之前相同)
     char dbPath[512];
     snprintf(dbPath, sizeof(dbPath), "%s/assets/database.txt", exeDirPath);
-
-    // 3. 调用操作系统 API 获取文件句柄
     FILE *file = fopen(dbPath, "r");
-    if (!file) {
-        // 如果文件不存在，分配 0 个内存，防止野指针
+    if (file) {
         movieCount = 0;
-        movies = nullptr;
-        return;
+        char buffer[256];
+        while (fgets(buffer, sizeof(buffer), file)) if (strlen(buffer) > 2) movieCount++;
+        movies = new Movie[movieCount];
+        rewind(file);
+        int index = 0;
+        while (fgets(buffer, sizeof(buffer), file)) {
+            if (strlen(buffer) <= 2) continue;
+            sscanf(buffer, "%d,%[^,],%[^,],%[^,],%lf,%d,%d",
+                   &movies[index].id, movies[index].title, movies[index].posterPath,
+                   movies[index].showTime, &movies[index].price, &movies[index].duration,
+                   &movies[index].targetHallId);
+            index++;
+        }
+        fclose(file);
     }
 
-    // 4. 第一次扫描：统计文件中的行数（确定需要分配的内存大小）
-    movieCount = 0;
-    char buffer[256];
-    while (fgets(buffer, sizeof(buffer), file)) {
-        if (strlen(buffer) > 2) movieCount++; 
+    // 核心改动 2：加载座位持久化文件
+    char seatPath[512];
+    snprintf(seatPath, sizeof(seatPath), "%s/assets/seats.txt", exeDirPath);
+    FILE *seatFile = fopen(seatPath, "r");
+    if (seatFile) {
+        char sBuffer[128];
+        while (fgets(sBuffer, sizeof(sBuffer), seatFile)) {
+            int hId, r, c;
+            if (sscanf(sBuffer, "%d,%d,%d", &hId, &r, &c) == 3) {
+                // 找到对应的影厅内存块，修改其底层状态
+                for(int i=0; i<hallCount; i++){
+                    if(halls[i].hallId == hId && r < halls[i].rows && c < halls[i].colsPerRow[r]){
+                        halls[i].seatMatrix[r][c] = 1; // 标记为已售
+                    }
+                }
+            }
+        }
+        fclose(seatFile);
     }
-
-    // 5. 在堆区动态分配精确大小的结构体数组
-    movies = new Movie[movieCount];
-
-    // 6. 将文件指针重置回文件头部，进行第二次扫描并拷贝数据
-    rewind(file);
-    int index = 0;
-    while (fgets(buffer, sizeof(buffer), file)) {
-        if (strlen(buffer) <= 2) continue;
-
-        // 利用 sscanf 从字符缓冲流中提取指定格式的数据，写入结构体内存地址
-        // %[^,] 表示读取直到遇到逗号为止的所有字符
-        sscanf(buffer, "%d,%[^,],%[^,],%[^,],%lf,%d,%d",
-               &movies[index].id,
-               movies[index].title,
-               movies[index].posterPath,
-               movies[index].showTime,
-               &movies[index].price,
-               &movies[index].duration,
-               &movies[index].targetHallId);
-               
-        index++;
-    }
-    
-    // 关闭文件句柄释放系统资源
-    fclose(file);
 }
 
 // 暴露底层的电影数组指针
@@ -122,4 +114,109 @@ Hall* CinemaManager::getHallById(int id) {
         }
     }
     return nullptr; // 未命中时返回空指针防止越界
+}
+
+// 快速排序：分区基准逻辑
+int CinemaManager::partitionSeats(SeatRecord* arr, int low, int high) {
+    SeatRecord pivot = arr[high]; // 选取末尾元素作为基准点
+    int i = low - 1;              // 维护一个小于基准点的连续区间边界
+    
+    for (int j = low; j < high; j++) {
+        bool isLess = false;
+        // 多级权重比较：场次 ID 优先，行号次之，列号最后
+        if (arr[j].hallId < pivot.hallId) {
+            isLess = true;
+        } else if (arr[j].hallId == pivot.hallId) {
+            if (arr[j].row < pivot.row) {
+                isLess = true;
+            } else if (arr[j].row == pivot.row && arr[j].col < pivot.col) {
+                isLess = true;
+            }
+        }
+        
+        // 如果当前节点值更小，将其交换至前半区
+        if (isLess) {
+            i++;
+            SeatRecord temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+    // 将基准点归位到分界线处
+    SeatRecord temp = arr[i + 1];
+    arr[i + 1] = arr[high];
+    arr[high] = temp;
+    return i + 1;
+}
+
+// 快速排序：递归调用栈
+void CinemaManager::quickSortSeats(SeatRecord* arr, int low, int high) {
+    if (low < high) {
+        int pi = partitionSeats(arr, low, high);
+        quickSortSeats(arr, low, pi - 1);  // 递归处理左半区
+        quickSortSeats(arr, pi + 1, high); // 递归处理右半区
+    }
+}
+
+// I/O 写入与状态同步
+void CinemaManager::saveBookedSeats(int hallId, const int* rows, const int* cols, int count, const char* exeDirPath) {
+    char seatPath[512];
+    snprintf(seatPath, sizeof(seatPath), "%s/assets/seats.txt", exeDirPath);
+
+    // 1. 扫描物理文件获取已有记录总数
+    int existingCount = 0;
+    FILE* file = fopen(seatPath, "r");
+    if (file) {
+        char buffer[128];
+        while (fgets(buffer, sizeof(buffer), file)) existingCount++;
+        fclose(file);
+    }
+
+    // 2. 动态分配内存以容纳 全量数据
+    int totalCount = existingCount + count;
+    if (totalCount == 0) return;
+    SeatRecord* records = new SeatRecord[totalCount];
+
+    // 3. 将物理文件内容映射到堆内存
+    int index = 0;
+    file = fopen(seatPath, "r");
+    if (file) {
+        char buffer[128];
+        while (fgets(buffer, sizeof(buffer), file)) {
+            sscanf(buffer, "%d,%d,%d", &records[index].hallId, &records[index].row, &records[index].col);
+            index++;
+        }
+        fclose(file);
+    }
+
+    // 4. 追加当前次操作产生的新座位数据，并同步修改底层的二维指针矩阵状态
+    Hall* hall = getHallById(hallId);
+    for (int i = 0; i < count; i++) {
+        records[index].hallId = hallId;
+        records[index].row = rows[i];
+        records[index].col = cols[i];
+        
+        // 实时更新当前运行实例的内存矩阵标识
+        if (hall && rows[i] < hall->rows && cols[i] < hall->colsPerRow[rows[i]]) {
+            hall->seatMatrix[rows[i]][cols[i]] = 1; 
+        }
+        index++;
+    }
+
+    // 5. 对内存中的连续结构体数组执行快速排序
+    if (totalCount > 1) {
+        quickSortSeats(records, 0, totalCount - 1);
+    }
+
+    // 6. 重置文件读写指针，以全量覆盖模式刷入磁盘
+    file = fopen(seatPath, "w");
+    if (file) {
+        for (int i = 0; i < totalCount; i++) {
+            fprintf(file, "%d,%d,%d\n", records[i].hallId, records[i].row, records[i].col);
+        }
+        fclose(file);
+    }
+
+    // 7. 必须释放堆区内存，防止内存泄漏
+    delete[] records;
 }

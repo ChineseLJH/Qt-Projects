@@ -15,10 +15,10 @@ struct Movie {
 // 影厅核心结构体
 struct Hall {
     int hallId;
-    int totalSeats;         // 50, 100, 或 150
+    int totalSeats;
     int rows;
-    int cols;
-    int **seatMatrix;       // 核心考点：二维指针矩阵。0=空闲, 1=已售, 2=锁定
+    int *colsPerRow;
+    int **seatMatrix;
 };
 
 // 订单/票务结构体
@@ -29,6 +29,12 @@ struct Ticket {
     int seatRow;
     int seatCol;
     double finalPrice;
+};
+
+struct SeatRecord {
+    int hallId;
+    int row;
+    int col;
 };
 
 #endif // CORE_STRUCTS_H
