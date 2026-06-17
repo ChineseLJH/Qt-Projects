@@ -1,53 +1,134 @@
 #include "movielistview.h"
 #include <QLabel>
 #include <QPushButton>
-#include <cstdio> // 引入 snprintf
+#include <QFrame>
+#include <QPixmap>
+#include <QCoreApplication>
+#include <QStyle> // 核心引入：用于刷新底层样式树
+#include <cstdio>
 
 MovieListView::MovieListView(QWidget *parent) : QWidget(parent)
 {
+    this->setAttribute(Qt::WA_StyledBackground, true);
+    this->setObjectName("movieListView");
+
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(40, 40, 40, 40);
     
-    QLabel *title = new QLabel("正在热映 (请选择排片场次)", this);
+    QLabel *title = new QLabel("正在热映", this);
     title->setAlignment(Qt::AlignCenter);
-    title->setStyleSheet("font-size: 20px; font-weight: bold; margin: 20px;");
+    title->setStyleSheet("color: #F8F9FA; font-size: 28px; font-weight: bold; margin-bottom: 20px;");
     
     listLayout = new QVBoxLayout();
-    listLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter); // 列表顶部水平居中对齐
+    listLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter); 
+    listLayout->setSpacing(20);
     
     mainLayout->addWidget(title);
     mainLayout->addLayout(listLayout);
-    mainLayout->addStretch(); // 把列表往上顶
+    mainLayout->addStretch();
 }
 
-void MovieListView::loadMovies(Movie *movies, int count)
+void MovieListView::loadMovies(CinemaManager *manager)
 {
-    if (movies == nullptr) return;
+    if (manager == nullptr || manager->getMovies() == nullptr) return;
 
-    // 清理旧的 UI 节点缓存
     QLayoutItem *child;
     while ((child = listLayout->takeAt(0)) != nullptr) {
         delete child->widget();
         delete child;
     }
 
-    // 遍历底层 Movie 指针数组
-    for (int i = 0; i < count; ++i) {
-        char btnText[128];
-        // 使用纯 C 语言方式格式化字符串
-        snprintf(btnText, sizeof(btnText), "《%s》 | 时长: %d 分钟 | 票价: %.1f 元", 
-                 movies[i].title, movies[i].duration, movies[i].price);
+    Movie *movies = manager->getMovies();
+    int count = manager->getMovieCount();
+    QString exePath = QCoreApplication::applicationDirPath();
 
-        QPushButton *btn = new QPushButton(btnText, this);
-        btn->setFixedSize(400, 60);
-        btn->setStyleSheet("QPushButton { text-align: left; padding-left: 20px; font-size: 16px; }");
+    for (int i = 0; i < count; ++i) {
+        // 1. 数据寻址与座位统计逻辑
+        Hall *hall = manager->getHallById(movies[i].targetHallId);
+        int totalSeats = (hall != nullptr) ? hall->totalSeats : 0;
+        int occupiedSeats = 0;
+        if (hall != nullptr && hall->seatMatrix != nullptr) {
+            for (int r = 0; r < hall->rows; ++r) {
+                for (int c = 0; c < hall->cols; ++c) {
+                    if (hall->seatMatrix[r][c] == 1) occupiedSeats++;
+                }
+            }
+        }
+
+        // 2. 实例化卡片容器，移除内联样式，仅绑定对象名称
+        QFrame *card = new QFrame(this);
+        card->setFixedSize(700, 160);
+        card->setObjectName("movieCard"); 
+
+        QHBoxLayout *cardLayout = new QHBoxLayout(card);
+        cardLayout->setContentsMargins(15, 15, 20, 15);
+        cardLayout->setSpacing(20);
+
+        // 3. 实例化海报标签
+        QLabel *posterLabel = new QLabel(card);
+        posterLabel->setFixedSize(90, 130);
+        
+        QString imgPath = exePath + "/" + movies[i].posterPath;
+        QPixmap posterImg(imgPath);
+        if (!posterImg.isNull()) {
+            posterLabel->setPixmap(posterImg.scaled(posterLabel->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+        } else {
+            posterLabel->setText("暂无海报");
+            posterLabel->setAlignment(Qt::AlignCenter);
+        }
+
+        // 4. 建立文本排版树
+        QVBoxLayout *infoLayout = new QVBoxLayout();
+        infoLayout->setSpacing(5);
+        
+        QLabel *titleLabel = new QLabel(movies[i].title, card);
+        titleLabel->setObjectName("movieTitle"); // 映射到外部 QSS
+
+        char detailStr[256];
+        snprintf(detailStr, sizeof(detailStr), "放映时间: %s  |  时长: %d 分钟  |  票价: %.1f 元", 
+                 movies[i].showTime, movies[i].duration, movies[i].price);
+        QLabel *detailLabel = new QLabel(detailStr, card);
+        detailLabel->setObjectName("movieDetail"); // 映射到外部 QSS
+
+        char seatStr[128];
+        snprintf(seatStr, sizeof(seatStr), "座位情况: %d / %d (已售 %d)", 
+                 (totalSeats - occupiedSeats), totalSeats, occupiedSeats);
+        QLabel *seatLabel = new QLabel(seatStr, card);
+        seatLabel->setObjectName("movieSeat"); // 映射到外部 QSS
+        
+        // 核心改动：通过元对象动态属性控制颜色，消除 C++ 中的样式硬编码
+        if (occupiedSeats >= totalSeats) {
+            seatLabel->setProperty("isFull", true);
+        } else {
+            seatLabel->setProperty("isFull", false);
+        }
+        
+        // 物理刷新指令：动态属性改变后，必须强行通知样式引擎重新计算该节点的渲染规则
+        seatLabel->style()->unpolish(seatLabel);
+        seatLabel->style()->polish(seatLabel);
+
+        infoLayout->addWidget(titleLabel);
+        infoLayout->addWidget(detailLabel);
+        infoLayout->addWidget(seatLabel);
+        infoLayout->addStretch();
+
+        // 5. 实例化按钮
+        QPushButton *bookBtn = new QPushButton("选座购票", card);
+        bookBtn->setObjectName("movieBookBtn"); // 映射到外部 QSS
+        bookBtn->setFixedSize(120, 45);
+        bookBtn->setCursor(Qt::PointingHandCursor);
 
         int currentMovieId = movies[i].id;
-
-        // 核心跳转映射：点击该按钮，向外发射带有当前电影 ID 的信号
-        connect(btn, &QPushButton::clicked, this, [=]() {
+        connect(bookBtn, &QPushButton::clicked, this, [=]() {
             emit requestSeatSelection(currentMovieId);
         });
 
-        listLayout->addWidget(btn);
+        // 6. 拓扑结构组装
+        cardLayout->addWidget(posterLabel);
+        cardLayout->addLayout(infoLayout);
+        cardLayout->addStretch();
+        cardLayout->addWidget(bookBtn, 0, Qt::AlignVCenter);
+
+        listLayout->addWidget(card);
     }
 }

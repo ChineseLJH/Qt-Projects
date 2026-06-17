@@ -81,4 +81,8 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(CinemaTicketSystem)
 endif()
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_command(TARGET CinemaTicketSystem POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets
+    ${CMAKE_CURRENT_BINARY_DIR}/assets
+)

@@ -1,5 +1,7 @@
 #include "cinema_manager.h"
 #include <cstring> // 用于 strcpy 等 C 标准库字符操作
+#include <cstdio>  // 引入底层文件 I/O
+#include <cstdlib>
 
 CinemaManager::CinemaManager() : halls(nullptr), hallCount(3), movies(nullptr), movieCount(0) {
     // 构造函数中暂不分配大块内存，留给显式的 initializeData 调用
@@ -42,57 +44,63 @@ void CinemaManager::freeSeatMatrix(int **matrix, int rows) {
     delete[] matrix;        // 释放行指针数组
 }
 
-void CinemaManager::initializeData() {
-    // 分配 3 个影厅的连续内存
+void CinemaManager::initializeData(const char* exeDirPath) {
+    // 1. 初始化 3 个影厅的内存 (保持原来的代码不变)
+    hallCount = 3;
     halls = new Hall[hallCount];
-
-    // 初始化一号厅 (50座：5行10列)
-    halls[0].hallId = 1;
-    halls[0].totalSeats = 50;
-    halls[0].rows = 5;
-    halls[0].cols = 10;
+    
+    halls[0].hallId = 1; halls[0].totalSeats = 50; halls[0].rows = 5; halls[0].cols = 10;
     halls[0].seatMatrix = allocateSeatMatrix(5, 10);
-
-    // 初始化二号厅 (100座：10行10列)
-    halls[1].hallId = 2;
-    halls[1].totalSeats = 100;
-    halls[1].rows = 10;
-    halls[1].cols = 10;
+    halls[1].hallId = 2; halls[1].totalSeats = 100; halls[1].rows = 10; halls[1].cols = 10;
     halls[1].seatMatrix = allocateSeatMatrix(10, 10);
-
-    // 初始化三号厅 (150座：10行15列)
-    halls[2].hallId = 3;
-    halls[2].totalSeats = 150;
-    halls[2].rows = 10;
-    halls[2].cols = 15;
+    halls[2].hallId = 3; halls[2].totalSeats = 150; halls[2].rows = 10; halls[2].cols = 15;
     halls[2].seatMatrix = allocateSeatMatrix(10, 15);
 
-    // 模拟写入部分已售状态 (例如一号厅的第3行第4列已售)
-    // 底层寻址等价于 *(*(halls[0].seatMatrix + 2) + 3) = 1;
-    halls[0].seatMatrix[2][3] = 1; 
+    // 2. 动态拼装数据库文件的绝对物理路径
+    char dbPath[512];
+    snprintf(dbPath, sizeof(dbPath), "%s/assets/database.txt", exeDirPath);
 
-    // 分配并初始化电影数据 (严格使用字符数组和 strncpy)
-    movieCount = 2;
-    movies = new Movie[movieCount];
-    
-    movies[0].id = 101;
-    strncpy(movies[0].title, "Inception", sizeof(movies[0].title) - 1);
-    movies[0].price = 45.0;
-    movies[0].duration = 148;
-
-    movies[1].id = 102;
-    strncpy(movies[1].title, "The Matrix", sizeof(movies[1].title) - 1);
-    movies[1].price = 40.0;
-    movies[1].duration = 136;
-}
-
-Hall* CinemaManager::getHallById(int id) {
-    for (int i = 0; i < hallCount; ++i) {
-        if (halls[i].hallId == id) {
-            return &halls[i]; // 返回对应结构体的内存地址
-        }
+    // 3. 调用操作系统 API 获取文件句柄
+    FILE *file = fopen(dbPath, "r");
+    if (!file) {
+        // 如果文件不存在，分配 0 个内存，防止野指针
+        movieCount = 0;
+        movies = nullptr;
+        return;
     }
-    return nullptr;
+
+    // 4. 第一次扫描：统计文件中的行数（确定需要分配的内存大小）
+    movieCount = 0;
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), file)) {
+        if (strlen(buffer) > 2) movieCount++; 
+    }
+
+    // 5. 在堆区动态分配精确大小的结构体数组
+    movies = new Movie[movieCount];
+
+    // 6. 将文件指针重置回文件头部，进行第二次扫描并拷贝数据
+    rewind(file);
+    int index = 0;
+    while (fgets(buffer, sizeof(buffer), file)) {
+        if (strlen(buffer) <= 2) continue;
+
+        // 利用 sscanf 从字符缓冲流中提取指定格式的数据，写入结构体内存地址
+        // %[^,] 表示读取直到遇到逗号为止的所有字符
+        sscanf(buffer, "%d,%[^,],%[^,],%[^,],%lf,%d,%d",
+               &movies[index].id,
+               movies[index].title,
+               movies[index].posterPath,
+               movies[index].showTime,
+               &movies[index].price,
+               &movies[index].duration,
+               &movies[index].targetHallId);
+               
+        index++;
+    }
+    
+    // 关闭文件句柄释放系统资源
+    fclose(file);
 }
 
 // 暴露底层的电影数组指针
@@ -103,4 +111,15 @@ Movie* CinemaManager::getMovies() {
 // 暴露电影数组的长度
 int CinemaManager::getMovieCount() {
     return movieCount;
+}
+
+Hall* CinemaManager::getHallById(int id) {
+    if (halls == nullptr) return nullptr;
+    
+    for (int i = 0; i < hallCount; ++i) {
+        if (halls[i].hallId == id) {
+            return &halls[i]; // 取出该结构体实例在堆区中的首地址并返回
+        }
+    }
+    return nullptr; // 未命中时返回空指针防止越界
 }

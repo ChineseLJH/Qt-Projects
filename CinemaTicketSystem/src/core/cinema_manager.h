@@ -9,7 +9,7 @@ public:
     ~CinemaManager();
 
     // 初始化测试数据（3个影厅与排片）
-    void initializeData();
+    void initializeData(const char* exeDirPath);
 
     // 提供对底层结构体的只读/读写指针访问
     Hall* getHallById(int id);

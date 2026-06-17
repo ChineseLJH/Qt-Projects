@@ -4,6 +4,7 @@
 #include "gui/movielistview.h"
 #include "gui/seatselectionview.h"
 #include "gui/checkoutview.h"
+#include <QCoreApplication>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -11,15 +12,14 @@ Widget::Widget(QWidget *parent)
     this->resize(1024, 768); 
     this->setWindowTitle("智能电影院售票系统");
 
-    // 1. 在堆区分配底层核心管理器的内存，并初始化所有结构体数据
+    QString exePath = QCoreApplication::applicationDirPath();
+    
     manager = new CinemaManager();
-    manager->initializeData();
+    manager->initializeData(exePath.toUtf8().constData());
 
     setupUi();
 
-    // 2. 将底层内存中的电影数据注入到排片视图中
-    movieListView->loadMovies(manager->getMovies(), manager->getMovieCount());
-
+    movieListView->loadMovies(manager);
     connectSignals();
 }
 

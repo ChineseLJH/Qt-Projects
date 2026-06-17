@@ -4,10 +4,12 @@
 // 影片核心结构体
 struct Movie {
     int id;
-    char title[64];         // 强制使用字符数组
+    char title[64];         // 电影名称
+    char posterPath[128];   // 海报图片在硬盘上的相对地址
+    char showTime[16];      // 放映时间 (例如 "14:30")
     double price;
-    int duration;           // 时长(分钟)
-    // 可扩展：指向后续排期链表或数组的指针
+    int duration;
+    int targetHallId;       // 该电影绑定的影厅 ID
 };
 
 // 影厅核心结构体

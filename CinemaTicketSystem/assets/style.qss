@@ -43,3 +43,59 @@ QWidget {
 #startBtn:pressed {
     background-color: #D93838;
 }
+
+/* 卡片外部容器 */
+QFrame#movieCard {
+    background-color: #2C3E50;
+    border-radius: 12px;
+    border: 1px solid #34495E;
+}
+
+/* 强制清除卡片内部所有标签的背景与边框，防止级联污染 */
+QFrame#movieCard QLabel {
+    border: none;
+    background: transparent;
+}
+
+/* 电影标题 */
+QLabel#movieTitle {
+    color: #ECF0F1;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* 电影详情参数 */
+QLabel#movieDetail {
+    color: #BDC3C7;
+    font-size: 14px;
+}
+
+/* 座位状态标签 - 默认状态（空闲、有票）显式指定绿色 */
+QLabel#movieSeat {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2ECC71; 
+}
+
+/* 座位状态标签 - 当动态属性 isFull 为 true 时，底层重绘为红色 */
+QLabel#movieSeat[isFull="true"] {
+    color: #E74C3C;
+}
+
+/* 购票按钮 */
+QPushButton#movieBookBtn {
+    background-color: #E67E22;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    border: none;
+}
+
+QPushButton#movieBookBtn:hover {
+    background-color: #D35400;
+}
+
+QPushButton#movieBookBtn:pressed {
+    background-color: #A04000;
+}

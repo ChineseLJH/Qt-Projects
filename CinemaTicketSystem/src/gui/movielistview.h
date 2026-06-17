@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QVBoxLayout>
-#include "../core/core_structs.h" // 引入底层结构体
+#include "../core/cinema_manager.h" // 引入底层管理器
 
 class MovieListView : public QWidget
 {
@@ -11,15 +11,14 @@ class MovieListView : public QWidget
 public:
     explicit MovieListView(QWidget *parent = nullptr);
 
-    // 核心接口：接收纯 C++ 的电影数组首地址和数量
-    void loadMovies(Movie *movies, int count);
+    // 修改接口：直接接收管理器指针，以便内部反查影厅座位
+    void loadMovies(CinemaManager *manager);
 
 signals:
-    // 触发此信号时，携带着用户选择的影片 ID
     void requestSeatSelection(int movieId);
 
 private:
-    QVBoxLayout *listLayout; // 专门用来存放电影列表的局部布局
+    QVBoxLayout *listLayout;
 };
 
 #endif // MOVIELISTVIEW_H
