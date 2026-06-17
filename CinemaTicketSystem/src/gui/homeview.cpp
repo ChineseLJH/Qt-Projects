@@ -5,23 +5,31 @@
 
 HomeView::HomeView(QWidget *parent) : QWidget(parent)
 {
-    // 1. 在堆内存中分配一个垂直布局管理器，并将当前界面(this)设为它的父节点
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    // 核心物理修正：强制向底层渲染引擎申请 QWidget 的背景重绘权限
+    this->setAttribute(Qt::WA_StyledBackground, true);
+    
+    // 绑定内存标识符，供 QSS 引擎精准寻址匹配
+    this->setObjectName("homeView");
 
-    // 2. 动态分配一个标签，设置文字居中
-    QLabel *titleLabel = new QLabel("欢迎来到售票系统", this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0); // 取消边缘保护间距
+
+    QLabel *titleLabel = new QLabel("智能电影院售票系统", this);
+    titleLabel->setObjectName("mainTitleLabel"); // 绑定 ID
     titleLabel->setAlignment(Qt::AlignCenter);
 
-    // 3. 动态分配一个按钮
     QPushButton *btnStart = new QPushButton("开始购票", this);
-    btnStart->setFixedSize(120, 40); // 暂时给按钮一个固定大小，防止被拉伸得太难看
+    btnStart->setObjectName("startBtn");         // 绑定 ID
+    btnStart->setFixedSize(260, 60);             // 限制内存渲染区块的最大宽高
+    btnStart->setCursor(Qt::PointingHandCursor);
 
-    // 4. 将这两个组件指针添加到布局管理器中
+    // 计算二维纵轴坐标，利用弹性系数分配剩余显存区域
+    layout->addStretch(1); 
     layout->addWidget(titleLabel);
-    layout->addWidget(btnStart, 0, Qt::AlignHCenter); // 让按钮在水平方向居中
+    layout->addSpacing(80); // 固定 80 像素的物理间距
+    layout->addWidget(btnStart, 0, Qt::AlignHCenter); 
+    layout->addStretch(1); 
 
-    // 5. 核心底层逻辑：信号转发
-    // 将按钮自带的 clicked() 信号，连接到我们自定义的 requestBookTicket() 信号上。
-    // 这意味着点击按钮时，HomeView 会向外部广播 "我要购票" 的内存事件。
+    // 绑定事件寄存器跳转
     connect(btnStart, &QPushButton::clicked, this, &HomeView::requestBookTicket);
 }

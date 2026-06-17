@@ -1,0 +1,45 @@
+/* =========================================
+   全局基础属性初始化
+   ========================================= */
+QWidget {
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+}
+
+/* =========================================
+   页面级容器底层背景
+   使用对象 ID 选择器精准映射到特定实例
+   ========================================= */
+#homeView, #movieListView, #seatSelectionView, #checkoutView {
+    background-color: #181C24; /* 深空黑灰，提升沉浸感 */
+}
+
+/* =========================================
+   主页专属组件映射
+   ========================================= */
+#mainTitleLabel {
+    color: #F8F9FA;
+    font-size: 52px;
+    font-weight: 800;
+    letter-spacing: 12px;
+    background: transparent; /* 强制清空级联污染的背景 */
+}
+
+#startBtn {
+    /* 采用显卡加速的线性渐变色填充寄存器 */
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #FF416C, stop:1 #FF4B2B);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 30px; /* 开启底层抗锯齿圆角计算 */
+    border: none;
+}
+
+/* 拦截鼠标悬浮中断，重绘指令 */
+#startBtn:hover {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #FF4B2B, stop:1 #FF416C);
+}
+
+/* 拦截鼠标按下中断，重绘指令 */
+#startBtn:pressed {
+    background-color: #D93838;
+}

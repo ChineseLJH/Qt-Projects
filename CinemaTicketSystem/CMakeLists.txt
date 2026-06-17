@@ -80,3 +80,5 @@ install(TARGETS CinemaTicketSystem
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(CinemaTicketSystem)
 endif()
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
