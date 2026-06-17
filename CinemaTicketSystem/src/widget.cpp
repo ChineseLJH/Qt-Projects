@@ -1,68 +1,106 @@
 #include "widget.h"
-// 后续建好子视图后，在这里 include 它们的头文件
-// #include "homeview.h"
-// #include "movielistview.h"
-// #include "seatselectionview.h"
-// #include "checkoutview.h"
+// 引入刚刚写好的头文件
+#include "gui/homeview.h"
+#include "gui/movielistview.h"
+#include "gui/seatselectionview.h"
+#include "gui/checkoutview.h"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
-    // 配置主窗口基础属性
     this->resize(1024, 768); 
     this->setWindowTitle("智能电影院售票系统");
 
-    // 核心初始化逻辑
+    // 1. 在堆区分配底层核心管理器的内存，并初始化所有结构体数据
+    manager = new CinemaManager();
+    manager->initializeData();
+
     setupUi();
+
+    // 2. 将底层内存中的电影数据注入到排片视图中
+    movieListView->loadMovies(manager->getMovies(), manager->getMovieCount());
+
     connectSignals();
 }
 
-Widget::~Widget()
-{
-    // 析构函数。由于我们传入了 this 作为 parent，
-    // Qt 的对象树会自动释放 mainStack 和各个 View 的内存。
-    // 但如果你后续在这里 new 了底层的二维矩阵等纯 C++ 结构，必须在这里手动 delete。
+Widget::~Widget() {
+    // 释放底层核心管理器的内存
+    delete manager;
 }
 
 void Widget::setupUi()
 {
-    // 1. 初始化最外层的主布局
     mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(0, 0, 0, 0); // 取消边缘留白，让画面铺满
+    mainLayout->setContentsMargins(0, 0, 0, 0);
 
-    // 2. 初始化堆栈容器
     mainStack = new QStackedWidget(this);
 
-    // 3. 实例化各个子视图 (传入 this 作为 parent)
-    // homeView = new HomeView(this);
-    // movieListView = new MovieListView(this);
-    // seatSelectionView = new SeatSelectionView(this);
-    // checkoutView = new CheckoutView(this);
+    // 1. 实例化各个页面对象（在堆上分配内存）
+    homeView = new HomeView(this);
+    movieListView = new MovieListView(this);
+    seatSelectionView = new SeatSelectionView(this);
+    checkoutView = new CheckoutView(this);
 
-    // 4. 将视图按顺序压入栈中 (索引与头文件中的 Page 枚举严格对应)
-    // mainStack->addWidget(homeView);          // Index 0
-    // mainStack->addWidget(movieListView);     // Index 1
-    // mainStack->addWidget(seatSelectionView); // Index 2
-    // mainStack->addWidget(checkoutView);      // Index 3
+    // 2. 按枚举顺序将页面压入堆栈容器
+    mainStack->addWidget(homeView);          // Index 0 (HOME_PAGE)
+    mainStack->addWidget(movieListView);     // Index 1 (MOVIE_LIST_PAGE)
+    mainStack->addWidget(seatSelectionView); // Index 2 (SEAT_SELECTION_PAGE)
+    mainStack->addWidget(checkoutView);      // Index 3 (CHECKOUT_PAGE)
 
-    // 5. 将堆栈容器放入主布局中
     mainLayout->addWidget(mainStack);
 
-    // 6. 默认显示第一页：系统入口页
+    // 设置程序启动时默认显示第 0 页
     mainStack->setCurrentIndex(HOME_PAGE);
 }
 
 void Widget::connectSignals()
 {
-    // 信号路由中心。
-    // 举例：捕获 HomeView 发出的“开始选座”信号，并触发页面跳转
-    // connect(homeView, &HomeView::requestBookTicket, this, [=]() {
-    //     navigateTo(MOVIE_LIST_PAGE);
-    // });
+    // 利用堆区变量或 Lambda 静态捕获来维持状态流转。
+    // 这里使用 shared_ptr 或外部变量，最直接的方式是在 Lambda 外部定义一个静态变量记录 movieId。
+    static int currentMovieId = -1;
+
+    connect(homeView, &HomeView::requestBookTicket, this, [=]() {
+        navigateTo(MOVIE_LIST_PAGE);
+    });
+
+    connect(movieListView, &MovieListView::requestSeatSelection, this, [=](int movieId) {
+        currentMovieId = movieId; // 记录当前选择的电影ID
+        int targetHallId = (movieId == 101) ? 1 : 2; 
+        Hall *targetHall = manager->getHallById(targetHallId);
+        seatSelectionView->loadHallData(targetHall);
+        navigateTo(SEAT_SELECTION_PAGE);
+    });
+
+    // 捕获带有底层矩阵物理坐标的选座信号
+    connect(seatSelectionView, &SeatSelectionView::requestCheckout, this, [=](int row, int col) {
+        // 反查指针
+        Movie *targetMovie = nullptr;
+        for(int i = 0; i < manager->getMovieCount(); ++i) {
+            if(manager->getMovies()[i].id == currentMovieId) {
+                targetMovie = &manager->getMovies()[i];
+                break;
+            }
+        }
+        int targetHallId = (currentMovieId == 101) ? 1 : 2; 
+        Hall *targetHall = manager->getHallById(targetHallId);
+
+        // 注入指针数据到结算页
+        checkoutView->loadOrderData(targetMovie, targetHall, row, col);
+        navigateTo(CHECKOUT_PAGE);
+    });
+
+    connect(checkoutView, &CheckoutView::requestBackToSeatSelection, this, [=]() {
+        navigateTo(SEAT_SELECTION_PAGE);
+    });
+
+    connect(checkoutView, &CheckoutView::requestReturnHome, this, [=]() {
+        navigateTo(HOME_PAGE);
+    });
 }
 
 void Widget::navigateTo(Page page)
 {
-    // 核心流转逻辑：切换堆栈窗口的当前索引
+    // 修改堆栈的当前索引
+    // 底层机制是隐藏当前显示的 QWidget 指针，并调用目标 QWidget 指针的 show() 方法引发重绘
     mainStack->setCurrentIndex(page);
 }

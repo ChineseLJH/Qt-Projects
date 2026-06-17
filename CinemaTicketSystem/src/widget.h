@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QStackedWidget>
 #include <QVBoxLayout>
+#include "core/cinema_manager.h"
 
 // 前向声明各个子视图类（这些类你后续需要单独创建）
 class HomeView;
@@ -40,6 +41,7 @@ private:
     MovieListView *movieListView;
     SeatSelectionView *seatSelectionView;
     CheckoutView *checkoutView;
+    CinemaManager *manager; // 底层数据管理器指针
 
     void setupUi();            // 初始化 UI 与布局的纯 C++ 实现
     void connectSignals();     // 统一管理所有的信号与槽
