@@ -119,3 +119,69 @@ QPushButton#btnSmart {
     border-radius: 4px;
 }
 QPushButton#btnSmart:hover { background-color: #9B59B6; }
+
+/* 支付状态 */
+#statusIcon {
+    font-size: 80px;
+    color: #2ECC71;
+    margin-bottom: 5px;
+}
+#statusText {
+    color: #ECF0F1;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* 票据卡片背景 */
+QFrame#ticketCard {
+    background-color: #F8F9FA; /* 浅色票据背景 */
+    border-radius: 15px;
+}
+
+/* 详情文字 */
+QLabel#checkoutTitle {
+    color: #2C3E50;
+    font-size: 24px;
+    font-weight: bold;
+}
+QLabel#checkoutInfo {
+    color: #7F8C8D;
+    font-size: 14px;
+}
+QLabel#checkoutSeats {
+    color: #34495E;
+    font-size: 15px;
+    line-height: 1.2;
+}
+
+/* 分割线 */
+#ticketLine {
+    border: none;
+    border-top: 2px dashed #BDC3C7; /* 电影票经典的虚线感 */
+    max-height: 2px;
+}
+
+/* 价格 */
+#checkoutPrice {
+    color: #E74C3C;
+    font-size: 32px;
+    font-weight: 900;
+}
+
+/* 按钮样式补全 */
+#btnPrimary {
+    background-color: #E67E22;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 25px;
+}
+#btnSecondary {
+    background-color: transparent;
+    color: #BDC3C7;
+    border: 2px solid #BDC3C7;
+    font-size: 18px;
+    border-radius: 25px;
+}
+#btnPrimary:hover { background-color: #D35400; }
+#btnSecondary:hover { background-color: #34495E; color: white; }

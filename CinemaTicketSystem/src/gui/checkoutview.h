@@ -5,25 +5,29 @@
 #include <QLabel>
 #include <QList>
 #include <QPoint>
+#include <QFrame> // 引入 QFrame 用于制作票据卡片
 #include "../core/core_structs.h"
 
 class CheckoutView : public QWidget
 {
     Q_OBJECT
-
 public:
     explicit CheckoutView(QWidget *parent = nullptr);
-    
-    // 提供给总控器的内存注入接口
     void loadOrderData(Movie *movie, Hall *hall, QList<QPoint> seats);
 
 signals:
     void requestBackToSeatSelection();
-    void requestReturnHome(QList<QPoint> confirmedSeats); // 确认支付时返回坐标
+    void requestReturnHome(QList<QPoint> confirmedSeats);
 
 private:
-    QLabel *titleLabel; // 将其提升为成员变量以便修改文本
+    // UI 组件指针
+    QLabel *movieTitleLabel;
+    QLabel *infoLabel;      // 放映时间、影厅
+    QLabel *seatsLabel;     // 具体座位
+    QLabel *priceLabel;     // 总价
+    QLabel *posterLabel;    // 缩略海报
+    
     QList<QPoint> pendingSeats;
 };
 
-#endif // CHECKOUTVIEW_H
+#endif
